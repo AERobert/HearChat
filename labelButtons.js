@@ -118,14 +118,42 @@ function labelButtonsWithIcons() {
   });
 }
 */
-// Execute the function to label the buttons when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', labelButtonsWithIcons);
 
 // Let's set up a MutationObserver to listen for changes in the DOM
 const observer = new MutationObserver(mutations => {
   // For simplicity, we'll call labelButtonsWithIcons on any DOM change.
-  // You might want to filter mutations for more efficiency
   labelButtonsWithIcons();
+
+  // Extend the logic to check for the specific addition or removal of the "Stop generating" button
+  mutations.forEach(mutation => {
+    if (mutation.type === 'childList') {
+      // Check for the addition of nodes
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1) { // Ensure it's an element node
+          if (node.matches('button[aria-label="Stop generating"]')) {
+            console.log('The "Stop generating" button has been added.');
+            // Perform any action you need when the button is added
+          } else if (node.querySelector('button[aria-label="Stop generating"]')) {
+            console.log('The "Stop generating" button has been added within a newly added node.');
+            // Perform any action you need when the button is added within a new node
+          }
+        }
+      });
+
+      // Check for the removal of nodes
+      mutation.removedNodes.forEach(node => {
+        if (node.nodeType === 1) { // Ensure it's an element node
+          if (node.matches('button[aria-label="Stop generating"]')) {
+            console.log('The "Stop generating" button has been removed.');
+            // Perform any action you need when the button is removed
+          } else if (node.querySelector('button[aria-label="Stop generating"]')) {
+            console.log('The "Stop generating" button has been removed from a node.');
+            // Perform any action you need when the button is removed from a node
+          }
+        }
+      });
+    }
+  });
 });
 
 // Start observing the document body for child list changes and subtree modifications

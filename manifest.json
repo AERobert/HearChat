@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Chat Enhancer",
-    "version": "1.0",
-    "description": "Enhances chat.openai.com with additional functionality.",
+    "name": "Accessible and Enhanced ChatGPT",
+    "version": "0.1.1",
+    "description": "adds features to make the ChatGPT web app more friendly for screen reader users..",
     "permissions": [
         "activeTab"
     ],
