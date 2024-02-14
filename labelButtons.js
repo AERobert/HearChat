@@ -93,6 +93,16 @@ function announceMessage(message) {
   console.log(`Just announced '${message}'`);
 }
 
+// handling sound effects
+
+function playSound(filename) {
+    var audioPath = chrome.runtime.getURL(`audio/${filename}`);
+    var audio = new Audio(audioPath);
+    audio.play();
+    console.log(`Played '${filename}'`);
+}
+
+
 // labeling
 // Assuming unlabeledButtonIcons is already declared and initialized
 
@@ -169,6 +179,7 @@ const observer = new MutationObserver(mutations => {
           } else if (node.querySelector('button[aria-label="Stop generating"]')) {
             console.log('The "Stop generating" button has been added within a newly added node.');
             announceMessage('responding ...');
+            playSound('alarm_beep.mp3');
           }
         }
       });
@@ -182,6 +193,7 @@ const observer = new MutationObserver(mutations => {
           } else if (node.querySelector('button[aria-label="Stop generating"]')) {
             console.log('The "Stop generating" button has been removed from a node.');
             announceMessage('finished responding');
+                playSound('fanfare.mp3');
           }
         }
       });
@@ -191,3 +203,4 @@ const observer = new MutationObserver(mutations => {
 
 // Start observing the document body for child list changes and subtree modifications
 observer.observe(document.body, { childList: true, subtree: true });
+
