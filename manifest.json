@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "Chat Enhancer",
+    "version": "1.0",
+    "description": "Enhances chat.openai.com with additional functionality.",
+    "permissions": [
+        "activeTab"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://chat.openai.com/*"
+            ],
+            "js": [
+                "labelButtons.js"
+            ]
+        }
+    ]
+}
