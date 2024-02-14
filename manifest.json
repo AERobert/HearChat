@@ -15,5 +15,11 @@
                 "labelButtons.js"
             ]
         }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [ "audio/*.mp3" ],
+            "matches": [ "*://chat.openai.com/*" ]
+        }
     ]
 }
