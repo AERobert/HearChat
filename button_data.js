@@ -57,5 +57,16 @@ const unlabeledButtonIcons = [
     "svg": "M7 11L12 6L17 11M12 18V7"
   },
 
-
+{
+    "name": "icon15",
+    "svg": "M12 20h9"
+  },
+  {
+    "name": "rename",
+    "svg": "M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+  },
+  {
+    "name": "icon17",
+    "svg": "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+  }
 ]
