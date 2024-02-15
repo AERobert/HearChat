@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Accessible and Enhanced ChatGPT",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "adds features to make the ChatGPT web app more friendly for screen reader users..",
     "permissions": [
         "activeTab"
@@ -12,7 +12,8 @@
                 "*://chat.openai.com/*"
             ],
             "js": [
-                "labelButtons.js"
+                "button_data.js",
+                "main.js"
             ]
         }
     ],
