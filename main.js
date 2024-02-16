@@ -41,25 +41,24 @@ function playSound(filename) {
 
 // headingifying the assistant name divs
 
-function isAssistantsTurnDiv(div) {
+function isAssistantTurnDiv(div) {
     const roleDiv = div.querySelector('div[data-message-author-role]');
     if (!roleDiv) return -1; // No div with the role attribute found.
     const role = roleDiv.getAttribute('data-message-author-role');
     return role === 'assistant' ? 1 : role === 'user' ? 0 : -1;
 }
 
-function getAssistantNameDiv(div) {
+function getNameDiv(div) {
     return div.querySelector('div.font-semibold.select-none') || null;
 }
-
 
 function getAssistantNameDivs() {
     let conversationDivs = document.querySelectorAll('div[data-testid^="conversation-turn-"]');
     
-    let assistantDivs = Array.from(conversationDivs).filter(div => isAssistantsTurnDiv(div) === 1);
+    let assistantDivs = Array.from(conversationDivs).filter(div => isAssistantTurnDiv(div) === 1);
     
     let assistantNameDivs = assistantDivs.flatMap(element => {
-        const nameDiv = getAssistantNameDiv(element);
+        const nameDiv = getNameDiv(element);
         return nameDiv ? [nameDiv] : [];
     });
 
@@ -86,7 +85,7 @@ function headingifyAllAssistantNameDivs(headingLevel) {
     });
 }
 
-headingifyAllAssistantNameDivs(4);
+// headingifyAllAssistantNameDivs(4);
 
 // labeling
 // Assuming unlabeledButtonIcons is already declared and initialized
@@ -144,6 +143,15 @@ const observer = new MutationObserver(mutations => {
             announceMessage('responding ...');
             playSound('alarm_beep.mp3');
           }
+            // check for adding of a new conversation turn div
+            if (node.querySelector('div[data-testid^="conversation-turn-"]')) {
+    headingifyAllAssistantNameDivs(4);
+    // if this condition is hit, it must be just after the page loaded so might as well get them all
+}
+else if(node.matches('div[data-testid^="conversation-turn-"]') && (isAssistantTurnDiv(node) === 1)) {
+    let assistantNameDiv = getNameDiv(node);
+        headingifyDiv(assistantNameDiv, 4);
+};
         }
       });
 
