@@ -1,4 +1,3 @@
-
 // set up basic announcement system
 
 // create invisible div to contain accessibility announcements
@@ -19,7 +18,6 @@ accessibilityAnnouncementsDiv.style.border = '0';
 accessibilityAnnouncementsDiv.style.clip = 'rect(0 0 0 0)';
 accessibilityAnnouncementsDiv.style.overflow = 'hidden';
 accessibilityAnnouncementsDiv.style.whiteSpace = 'nowrap';
-accessibilityAnnouncementsDiv.style.border = '0';
 
 document.body.appendChild(accessibilityAnnouncementsDiv);
 
@@ -35,12 +33,60 @@ function announceMessage(message) {
 // handling sound effects
 
 function playSound(filename) {
-    var audioPath = chrome.runtime.getURL(`audio/${filename}`);
-    var audio = new Audio(audioPath);
+    let audioPath = chrome.runtime.getURL(`audio/${filename}`);
+    let audio = new Audio(audioPath);
     audio.play();
     console.log(`Played '${filename}'`);
 }
 
+// headingifying the assistant name divs
+
+function isAssistantsTurnDiv(div) {
+    const roleDiv = div.querySelector('div[data-message-author-role]');
+    if (!roleDiv) return -1; // No div with the role attribute found.
+    const role = roleDiv.getAttribute('data-message-author-role');
+    return role === 'assistant' ? 1 : role === 'user' ? 0 : -1;
+}
+
+function getAssistantNameDiv(div) {
+    return div.querySelector('div.font-semibold.select-none') || null;
+}
+
+
+function getAssistantNameDivs() {
+    let conversationDivs = document.querySelectorAll('div[data-testid^="conversation-turn-"]');
+    
+    let assistantDivs = Array.from(conversationDivs).filter(div => isAssistantsTurnDiv(div) === 1);
+    
+    let assistantNameDivs = assistantDivs.flatMap(element => {
+        const nameDiv = getAssistantNameDiv(element);
+        return nameDiv ? [nameDiv] : [];
+    });
+
+    return assistantNameDivs;
+}
+
+function headingifyDiv(divNode, headingLevel) {
+    // Create a new heading element
+    const heading = document.createElement('h' + headingLevel);
+    // Move the divNode's textContent to the heading element
+    heading.textContent = divNode.textContent;
+    // Clear the divNode's existing content
+    divNode.textContent = '';
+    // Append the heading to the divNode
+    divNode.appendChild(heading);
+
+    return heading;
+}
+
+function headingifyAllAssistantNameDivs(headingLevel) {
+    let nameDivs = getAssistantNameDivs();
+    nameDivs.forEach(div => {
+        headingifyDiv(div, headingLevel);
+    });
+}
+
+headingifyAllAssistantNameDivs(4);
 
 // labeling
 // Assuming unlabeledButtonIcons is already declared and initialized
@@ -71,35 +117,16 @@ function labelButtonsWithIcons() {
   });
 }
 
+// event listener to execute code after the document loads
 
-// Execute the function to label the buttons
-labelButtonsWithIcons();
-/*
-// Assuming unlabeledButtonIcons is already declared and initialized
+document.addEventListener('DOMContentLoaded', function() {
+    // Execute the function to label the buttons
+    labelButtonsWithIcons();
 
-// Function to add aria-labels to buttons based on SVG d attribute matching
-function labelButtonsWithIcons() {
-  unlabeledButtonIcons.forEach(icon => {
-    // Find all buttons on the page
-    const buttons = document.querySelectorAll('button');
+    // headingify all assistant names (for old or shared chats)
+    headingifyAllAssistantNameDivs(4);
 
-    buttons.forEach(button => {
-      // Assume SVG is directly inside the button. Adjust selector as needed.
-      const svg = button.querySelector('svg');
-      if (svg) {
-        // Find all paths within the SVG and check if any match the icon's svg property
-        const paths = svg.querySelectorAll('path');
-        paths.forEach(path => {
-          if (path.getAttribute('d') === icon.svg) {
-            // If a matching path is found, set the button's aria-label
-            button.setAttribute('aria-label', icon.name);
-          }
-        });
-      }
-    });
-  });
-}
-*/
+});
 
 // Let's set up a MutationObserver to listen for changes in the DOM
 const observer = new MutationObserver(mutations => {
@@ -112,11 +139,8 @@ const observer = new MutationObserver(mutations => {
       // Check for the addition of nodes
       mutation.addedNodes.forEach(node => {
         if (node.nodeType === 1) { // Ensure it's an element node
-          if (node.matches('button[aria-label="Stop generating"]')) {
-            console.log('The "Stop generating" button has been added.');
-            // Perform any action you need when the button is added
-          } else if (node.querySelector('button[aria-label="Stop generating"]')) {
-            console.log('The "Stop generating" button has been added within a newly added node.');
+          if (node.matches('button[aria-label="Stop generating"]') || node.querySelector('button[aria-label="Stop generating"]')) {
+            console.log('the GPT is now responding.');
             announceMessage('responding ...');
             playSound('alarm_beep.mp3');
           }
@@ -126,11 +150,7 @@ const observer = new MutationObserver(mutations => {
       // Check for the removal of nodes
       mutation.removedNodes.forEach(node => {
         if (node.nodeType === 1) { // Ensure it's an element node
-          if (node.matches('button[aria-label="Stop generating"]')) {
-            console.log('The "Stop generating" button has been removed.');
-            // Perform any action you need when the button is removed
-          } else if (node.querySelector('button[aria-label="Stop generating"]')) {
-            console.log('The "Stop generating" button has been removed from a node.');
+          if (node.querySelector('button[aria-label="Stop generating"]')) {
             announceMessage('finished responding');
                 playSound('fanfare.mp3');
           }
