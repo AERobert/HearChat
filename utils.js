@@ -1,3 +1,11 @@
+/*
+    * utils.js
+    edited on 2024-02-16
+    * Robert Eggleston
+    * contains misc functions to be used lader in the extension
+    * expects to be first content script run
+*/
+
 // set up basic announcement system
 
 // create invisible div to contain accessibility announcements
@@ -85,14 +93,15 @@ function headingifyAllAssistantNameDivs(headingLevel) {
     });
 }
 
-// headingifyAllAssistantNameDivs(4);
+headingifyAllAssistantNameDivs(4);
 
 // labeling
 // Assuming unlabeledButtonIcons is already declared and initialized
 
 // Function to add aria-labels to buttons based on SVG "d" attribute matching and ensuring no text content
-function labelButtonsWithIcons() {
-  unlabeledButtonIcons.forEach(icon => {
+
+function labelButtonsWithIcons(button_data) {
+  button_data.forEach(icon => {
     // Find all buttons on the page
     const buttons = document.querySelectorAll('button');
 
@@ -115,59 +124,4 @@ function labelButtonsWithIcons() {
     });
   });
 }
-
-// event listener to execute code after the document loads
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Execute the function to label the buttons
-    labelButtonsWithIcons();
-
-    // headingify all assistant names (for old or shared chats)
-    headingifyAllAssistantNameDivs(4);
-
-});
-
-// Let's set up a MutationObserver to listen for changes in the DOM
-const observer = new MutationObserver(mutations => {
-  // For simplicity, we'll call labelButtonsWithIcons on any DOM change.
-  labelButtonsWithIcons();
-
-  // Extend the logic to check for the specific addition or removal of the "Stop generating" button
-  mutations.forEach(mutation => {
-    if (mutation.type === 'childList') {
-      // Check for the addition of nodes
-      mutation.addedNodes.forEach(node => {
-        if (node.nodeType === 1) { // Ensure it's an element node
-          if (node.matches('button[aria-label="Stop generating"]') || node.querySelector('button[aria-label="Stop generating"]')) {
-            console.log('the GPT is now responding.');
-            announceMessage('responding ...');
-            playSound('alarm_beep.mp3');
-          }
-            // check for adding of a new conversation turn div
-            if (node.querySelector('div[data-testid^="conversation-turn-"]')) {
-    headingifyAllAssistantNameDivs(4);
-    // if this condition is hit, it must be just after the page loaded so might as well get them all
-}
-else if(node.matches('div[data-testid^="conversation-turn-"]') && (isAssistantTurnDiv(node) === 1)) {
-    let assistantNameDiv = getNameDiv(node);
-        headingifyDiv(assistantNameDiv, 4);
-};
-        }
-      });
-
-      // Check for the removal of nodes
-      mutation.removedNodes.forEach(node => {
-        if (node.nodeType === 1) { // Ensure it's an element node
-          if (node.querySelector('button[aria-label="Stop generating"]')) {
-            announceMessage('finished responding');
-                playSound('fanfare.mp3');
-          }
-        }
-      });
-    }
-  });
-});
-
-// Start observing the document body for child list changes and subtree modifications
-observer.observe(document.body, { childList: true, subtree: true });
 
