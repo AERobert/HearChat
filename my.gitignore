@@ -17,9 +17,9 @@
 
 ## MacOS
 ### General
-.DS_Store
-.AppleDouble
-.LSOverride
+**/.DS_Store
+**/.AppleDouble
+**/.LSOverride
 
 ### Icon must end with two \r
 Icon
@@ -29,7 +29,7 @@ Icon
 
 ### Files that might appear in the root of a volume
 .DocumentRevisions-V100
-.fseventsd
+**/.fseventsd
 .Spotlight-V100
 .TemporaryItems
 .Trashes
@@ -45,10 +45,10 @@ Temporary Items
 
 ## Windows
 ### Windows thumbnail cache files
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
+**/Thumbs.db
+**/Thumbs.db:encryptable
+**/ehthumbs.db
+**/ehthumbs_vista.db
 
 ### Dump file
 *.stackdump
