@@ -6,52 +6,70 @@
     * expects to be run after utils.js and button_data.js
 */
 
-// event listener to execute code after the document loads
+// constants
 
-document.addEventListener('DOMContentLoaded', function() {
+const WAITFORDOM = 500; // the amount of time (in ms) the initial code will wait for the DOM to be fully loaded.
+
+// functions to be used in the big observer 
+
+function didRespondingStart(node) {
+    if (node.matches('button[aria-label="Stop generating"]') || node.querySelector('button[aria-label="Stop generating"]')) {
+        console.log('The GPT is now responding.');
+        announceMessage('Responding...');
+        playSound('alarm_beep.mp3');
+    }
+}
+
+function didRespondingFinish(node) {
+    if (node.querySelector('button[aria-label="Stop generating"]')) {
+        announceMessage('Finished responding');
+        playSound('fanfare.mp3');
+    }
+}
+
+function wasNewAssistantTurnAdded(node) {
+    // Check for adding of a new conversation turn div
+    if (node.querySelector('div[data-testid^="conversation-turn-"]')) {
+        // setTimeout(() => headingifyAllAssistantNameDivs(4), 500);
+        // If this condition is hit, it must be just after the page loaded so might as well get them all
+    } else if (node.matches('div[data-testid^="conversation-turn-"]') && (isAssistantTurnDiv(node) === 1)) {
+        let assistantNameDiv = getNameDiv(node);
+        headingifyDiv(assistantNameDiv, 4);
+    }
+}
+
+// timeout to wait for the DOM to fully load before executing initial code.
+// Todo: figure out how to make this all more elegant.
+
+setTimeout(function() {
     // Execute the function to label the buttons
-    // labelButtonsWithIcons(unlabeledButtonIcons);
+    labelButtonsWithIcons(unlabeledButtonIcons);
 
     // headingify all assistant names (for old or shared chats)
-    setTimeout(() => headingifyAllAssistantNameDivs(4), 1000);
-
-});
+    headingifyAllAssistantNameDivs(4);
+    console.log("should have just headingifyed some headings.");
+}, WAITFORDOM);
 
 // Let's set up a MutationObserver to listen for changes in the DOM
 const observer = new MutationObserver(mutations => {
   // For simplicity, we'll call labelButtonsWithIcons on any DOM change.
   labelButtonsWithIcons(unlabeledButtonIcons);
 
-  // Extend the logic to check for the specific addition or removal of the "Stop generating" button
+  // Check for the specific addition or removal of the "Stop generating" button
   mutations.forEach(mutation => {
     if (mutation.type === 'childList') {
       // Check for the addition of nodes
       mutation.addedNodes.forEach(node => {
-        if (node.nodeType === 1) { // Ensure it's an element node
-          if (node.matches('button[aria-label="Stop generating"]') || node.querySelector('button[aria-label="Stop generating"]')) {
-            console.log('the GPT is now responding.');
-            announceMessage('responding ...');
-            playSound('alarm_beep.mp3');
-          }
-            // check for adding of a new conversation turn div
-            if (node.querySelector('div[data-testid^="conversation-turn-"]')) {
-    setTimeout(() =>  headingifyAllAssistantNameDivs(4), 500);
-    // if this condition is hit, it must be just after the page loaded so might as well get them all
-}
-else if(node.matches('div[data-testid^="conversation-turn-"]') && (isAssistantTurnDiv(node) === 1)) {
-    let assistantNameDiv = getNameDiv(node);
-        headingifyDiv(assistantNameDiv, 4);
-};
+        if (node.nodeType === 1) { // Ensure it's an Element node
+          didRespondingStart(node);
+          wasNewAssistantTurnAdded(node);
         }
       });
 
       // Check for the removal of nodes
       mutation.removedNodes.forEach(node => {
-        if (node.nodeType === 1) { // Ensure it's an element node
-          if (node.querySelector('button[aria-label="Stop generating"]')) {
-            announceMessage('finished responding');
-                playSound('fanfare.mp3');
-          }
+        if (node.nodeType === 1) { // Ensure it's an Element node
+          didRespondingFinish(node);
         }
       });
     }
