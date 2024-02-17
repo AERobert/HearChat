@@ -13,7 +13,7 @@ const accessibilityAnnouncementsDiv = document.createElement('div');
 
 // adds aria attributes to make div useful
 accessibilityAnnouncementsDiv.setAttribute('role', 'alert');
-accessibilityAnnouncementsDiv.id = 'accessibility-announcements';
+haccessibilityAnnouncementsDiv.id = 'accessibility-announcements';
 
 // needs to be styled to be invisible
 
@@ -74,16 +74,43 @@ function getAssistantNameDivs() {
 }
 
 function headingifyDiv(divNode, headingLevel) {
-    // Create a new heading element
-    const heading = document.createElement('h' + headingLevel);
-    // Move the divNode's textContent to the heading element
-    heading.textContent = divNode.textContent;
-    // Clear the divNode's existing content
-    divNode.textContent = '';
-    // Append the heading to the divNode
-    divNode.appendChild(heading);
+    // Validate headingLevel is within the allowable range, including 0 for removal
+    if (headingLevel < 0 || headingLevel > 6) {
+        console.error("Invalid heading level. Please choose a value between 0 and 6.");
+        return null;
+    }
 
-    return heading;
+    // Consolidate query for an existing heading
+    const existingHeading = divNode.querySelector('h1, h2, h3, h4, h5, h6');
+
+    if ((headingLevel === 0) && existingHeading) {
+        // If headingLevel is 0, remove the existing heading if present
+        divNode.removeChild(existingHeading);
+        divNode.textContent = existingHeading.textContent;
+    }
+    else if (existingHeading) {
+        // Replace or retain existing heading based on the requested level
+        if (parseInt(existingHeading.tagName[1], 10) === headingLevel) {
+            // Existing heading matches the requested level, return it
+            return existingHeading;
+        } else {
+            // Replace existing heading with a new one of the specified level
+            const newHeading = document.createElement(`h${headingLevel}`);
+            newHeading.textContent = existingHeading.textContent;
+            divNode.replaceChild(newHeading, existingHeading);
+            return newHeading;
+        }
+    } else if (headingLevel >= 1 && headingLevel <= 6) {
+        // Add a new heading if there isn't one already
+        const heading = document.createElement(`h${headingLevel}`);
+        heading.textContent = divNode.textContent; // Use div's existing text content for the new heading
+        divNode.textContent = ''; // Clear the div's content before appending the new heading
+        divNode.appendChild(heading);
+        return heading;
+    }
+
+    // Given the logic flow, this return is a safeguard and should theoretically never be reached
+    return null;
 }
 
 function headingifyAllAssistantNameDivs(headingLevel) {
@@ -124,4 +151,5 @@ function labelButtonsWithIcons(button_data) {
     });
   });
 }
+
 
