@@ -1,10 +1,11 @@
 {
     "manifest_version": 3,
     "name": "HearChat: Accessible and Enhanced ChatGPT",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "adds features to make the ChatGPT web app more friendly for screen reader users..",
     "permissions": [
         "activeTab",
+        "tabs",
         "storage"
     ],
     "content_scripts": [
@@ -22,7 +23,10 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": [ "audio/*.mp3" ],
+            "resources": [ 
+                "audio/*.mp3",
+                "options/options.html"
+            ],
             "matches": [ "*://chat.openai.com/*" ]
         }
     

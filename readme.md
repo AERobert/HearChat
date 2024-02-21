@@ -28,7 +28,7 @@ A Chrome extension to make ChatGPT more accessible and friendly for screen reade
 
 ### Disclaimer and limitations
 
-This extension is currently at a very early beta level and thus it should not be relighed on to work at all times. The underlying code relighs heavily on ChatGPT's current HTML structure, so any changes to that structure could break it parshally or completely at any time.
+This extension is currently at a very early beta level and thus it should not be relied on to work at all times. The underlying code relies heavily on ChatGPT's current HTML structure, so any changes to that structure could break it partially or completely at any time.
 
 #### Installation
 
@@ -44,7 +44,7 @@ As this extension is not currently published in the Chrome Web Store, it must be
 
 Once installed, the extension will automatically run when visiting chat.openai.com. Headings, labels, sounds, and announcements should be added automatically when navigating and interacting with ChatGPT.
 
-The extension's options page includes some settings to customize the extension's notifications and heading level adding feature.
+The extension's options page includes some settings to customize the extension's notifications and heading level adding feature. This extension automatically adds a button to open these options at the bottom of every ChatGPT page.
 
 ### License
 
@@ -53,3 +53,5 @@ This project is licensed under the MIT license - see the [LICENSE](LICENSE) file
 ### Credits
 
 Created by [Robert Eggleston](https://github.com/AERobert)
+
+All sound effects taken from [Pixabay’s Sound Effects](https://pixabay.com/sound-effects/).
