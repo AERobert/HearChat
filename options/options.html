@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Accessibility Options</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <h1>Chatbot Accessibility Options</h1>
+    <form id="accessibilityOptionsForm">
+        <section id="responseNotifications">
+            <h2>Response Notifications</h2>
+            <div id="startingNotification">
+                <h3>Starting</h3>
+                <label for="startingOptions">Options:</label>
+                <select id="startingOptions" size="4">
+                    <option value="off" selected>Off</option>
+                    <option value="soundOnly">Sound Only</option>
+                    <option value="announcementOnly">Announcement Only</option>
+                    <option value="soundAndAnnouncement">Sound and Announcement</option>
+                </select>
+                <label for="startingSound">Sound:</label>
+                <select id="startingSound" size="5">
+                    <option value="none">None</option>
+                </select>
+                <label for="startingAnnouncement">Announcement:</label>
+                <input type="text" id="startingAnnouncement" value="Responding...">
+            </div>
+            <div id="finishingNotification">
+                <h3>Finishing</h3>
+                <label for="finishingOptions">Options:</label>
+                <select id="finishingOptions" size="4">
+                    <option value="off" selected>Off</option>
+                    <option value="soundOnly">Sound Only</option>
+                    <option value="announcementOnly">Announcement Only</option>
+                    <option value="soundAndAnnouncement">Sound and Announcement</option>
+                </select>
+                <label for="finishingSound">Sound:</label>
+                <select id="finishingSound" size="5">
+                    <option value="none">None</option>
+                </select>
+                <label for="finishingAnnouncement">Announcement:</label>
+                <input type="text" id="finishingAnnouncement" value="Finished Responding">
+            </div>
+            <div id="errorNotification">
+                <h3>Errors</h3>
+                <label for="errorOptions">Options:</label>
+                <select id="errorOptions" size="4">
+                    <option value="off" selected>Off</option>
+                    <option value="soundOnly">Sound Only</option>
+                    <option value="announcementOnly">Announcement Only</option>
+                    <option value="soundAndAnnouncement">Sound and Announcement</option>
+                </select>
+                <label for="errorSound">Sound:</label>
+                <select id="errorSound" size="5">
+                    <option value="none">None</option>
+                </select>
+                <label for="errorAnnouncement">Announcement:</label>
+                <input type="text" id="errorAnnouncement" value="An error occured">
+            </div>
+        </section>
+        <section id="headingifying">
+            <h2>Headingifying</h2>
+            <label for="desiredHeadingLevel">Desired Heading Level:</label>
+            <select id="desiredHeadingLevel" name="select heading level" size="7">
+                <option value="none" selected>None</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+            </select>
+        </section>
+        <button id="saveButton" type="submit">Save Changes</button>
+    </form>
+    <div id="announcementArea" role="alert"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>

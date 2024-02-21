@@ -1,10 +1,11 @@
 {
     "manifest_version": 3,
     "name": "Accessible and Enhanced ChatGPT",
-    "version": "0.3.2",
+    "version": "0.4.0",
     "description": "adds features to make the ChatGPT web app more friendly for screen reader users..",
     "permissions": [
-        "activeTab"
+        "activeTab",
+        "storage"
     ],
     "content_scripts": [
         {
@@ -12,9 +13,10 @@
                 "*://chat.openai.com/*"
             ],
             "js": [
-               "utils.js",
-                "button_data.js",
-                "observer.js"
+               "contentScripts/utils.js",
+                "contentScripts/button_data.js",
+                "contentScripts/observer.js",
+        "contentScripts/main.js"
             ]
         }
     ],
@@ -23,5 +25,8 @@
             "resources": [ "audio/*.mp3" ],
             "matches": [ "*://chat.openai.com/*" ]
         }
-    ]
+    
+    ],
+    
+    "options_page": "options/options.html"
 }

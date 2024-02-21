@@ -13,7 +13,7 @@ const accessibilityAnnouncementsDiv = document.createElement('div');
 
 // adds aria attributes to make div useful
 accessibilityAnnouncementsDiv.setAttribute('role', 'alert');
-haccessibilityAnnouncementsDiv.id = 'accessibility-announcements';
+accessibilityAnnouncementsDiv.id = 'accessibility-announcements';
 
 // needs to be styled to be invisible
 
@@ -152,4 +152,49 @@ function labelButtonsWithIcons(button_data) {
   });
 }
 
+// function to retrieve the users settings from Chrome's Sync storage.
+
+function restoreChromeSyncData(key) {
+  // Return a new promise that resolves with the saved data or null
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get([key], function(result) {
+      const savedData = result[key];
+      if (savedData) {
+        resolve(savedData); // Resolve the promise with the saved data
+      } else {
+        resolve(null); // Resolve the promise with null if no data was found
+      }
+    });
+  });
+}
+
+
+// process user settings
+
+function processHeadingLevel(selection) {
+    if (selection === "None") {
+        return 0;
+    }
+    else if ((parseInt(selection) >= 1) && (parseInt(selection) <= 6)) {
+        return parseInt(selection);
+    }
+    return null;
+}
+
+function soundNameToSoundFile (selection) {
+    if (selection === "None") {
+        return null;
+    }
+        return selection.replace(/ /g, '_') + '.mp3';
+}
+
+function processSettings (settingsData) {
+    settingsData.desiredHeadingLevel = processHeadingLevel(settingsData.desiredHeadingLevel);
+
+    settingsData.startingSound = soundNameToSoundFile(settingsData.startingSound);
+    settingsData.finishingSound = soundNameToSoundFile(settingsData.finishingSound);
+    settingsData.errorSound = soundNameToSoundFile(settingsData.errorSound);
+
+    return settingsData;
+}
 
