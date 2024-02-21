@@ -14,7 +14,6 @@ getSettingsAndObserve();
 // creates button element and appends it to the body
 const optionsButton = document.createElement('button');
 optionsButton.innerText = 'HearChat';
-optionsButton.aria-
 optionsButton.style.position = 'fixed';
 optionsButton.style.bottom = '20px';
 optionsButton.style.right = '20px';
