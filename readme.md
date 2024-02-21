@@ -44,7 +44,7 @@ As this extension is not currently published in the Chrome Web Store, it must be
 
 Once installed, the extension will automatically run when visiting chat.openai.com. Headings, labels, sounds, and announcements should be added automatically when navigating and interacting with ChatGPT.
 
-The extension's options page includes some settings to customize the extension's notifications and heading level adding feature.
+The extension's options page includes some settings to customize the extension's notifications and heading level adding feature. This extension automatically adds a button to open these options at the bottom of every ChatGPT page.
 
 ### License
 
