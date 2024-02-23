@@ -64,17 +64,30 @@ const soundSelects = [
 const soundNames = [
     "None",
     "alarm beep",
+    "barks",
+    "boing",
     "beep",
+    "bubble pop",
     "error",
     "fanfare",
     "game",
+    "glitch",
     "glockenspiel",
+    "heart beat",
     "jet start",
-    "laserrocket2",
-    "livechat",
+    "laser rocket",
+    "live chat",
     "magic surprise",
+    "meow",
+    "moo",
     "negative beeps",
-    "ping"
+    "ping",
+    "popcorn",
+    "rooster",
+    "sad trombone",
+    "snake",
+    "strings ascending",
+    "strings descending"
 ];
 
 function populateSelectDropdown(selectId, optionsArray) {
@@ -104,6 +117,30 @@ function populateSelectDropdown(selectId, optionsArray) {
     console.log(`Dropdown with ID '${selectId}' has been populated.`);
 }
 
-for (const soundSelectID of soundSelects ) {
-    populateSelectDropdown(soundSelectID, soundNames);
+// add listeners to all of the sound selectors to automatically play a sound when selected
+
+function playSound(filename) {
+    let audioPath = chrome.runtime.getURL(`audio/${filename}`);
+    let audio = new Audio(audioPath);
+    audio.play();
+    console.log(`Played '${filename}'`);
+}
+
+function soundNameToSoundFile (selection) {
+    if (selection === "None") {
+        return null;
+    }
+        return selection.replace(/ /g, '_') + '.mp3';
+}
+
+function addChangeListenerToPlay (selectId) {
+    document.getElementById(selectId).addEventListener('change', function() {
+        soundFile = soundNameToSoundFile(this.value);
+        playSound(soundFile);
+    });
+}
+
+for (const soundSelectId of soundSelects ) {
+    populateSelectDropdown(soundSelectId, soundNames);
+    addChangeListenerToPlay(soundSelectId);
 }
