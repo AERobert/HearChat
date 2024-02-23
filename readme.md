@@ -9,7 +9,7 @@ A Chrome extension to make ChatGPT more accessible and friendly for screen reade
 - Allows the user to set their preferred heading level, or to turn the feature off if they prefer.
 
 2. Sound effects to indicate when ChatGPT starts and stops responding
-- Provides 15 sound effects to choose from to make all the notifications unique.
+- Provides 25 sound effects to choose from to make all the notifications unique.
 
 - Screen reader announcements when ChatGPT starts/stops
 - Ability to change the announcement messages in the options page.

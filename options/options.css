@@ -71,12 +71,6 @@ button:hover {
     outline-offset: 4px;
 }
 
-[role="alert"] {
-    background: #ffdddd;
-    border-left: 6px solid #f44336;
-    padding: 15px;
-    margin-top: 20px;
-}
 
 @media only screen and (max-width: 768px) {
     body {
