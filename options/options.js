@@ -7,9 +7,25 @@ let formIsDirty = false;
 // const elements
 
 const optionsForm = document.getElementById('accessibilityOptionsForm');
+const accessibilityAnnouncementsDiv = document.getElementById("announcementArea");
+
+// announcement system
+
+// function to use div to announce messages to screen reader users
+function announceMessage(message) {
+  accessibilityAnnouncementsDiv.textContent = message;
+  setTimeout(() => {
+    accessibilityAnnouncementsDiv.textContent = '';
+    }, 1000);
+  console.log(`Just announced '${message}'`);
+}
+
+// add listeners to save the data when the form is submitted and to restore it when the document is loaded
+
 document.addEventListener('DOMContentLoaded', function() {
   // restore settings using chrome.storage.sync
   restoreData(hearChatOptionKey);
+
 });
 
 optionsForm.addEventListener('submit', function(event) {
@@ -17,7 +33,7 @@ optionsForm.addEventListener('submit', function(event) {
   const data = gatherFormData();
   saveData(hearChatOptionKey, data); // Save using chrome.storage.sync
   formIsDirty = false;
-  alert('Settings saved successfully!'); // Simple feedback
+  announceMessage("saved"); // inform the user the saving was successful
 });
 
 function gatherFormData() {
