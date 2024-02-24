@@ -1,17 +1,18 @@
+const hearChatOptionKey = "hearChatStoredOptions";
+
 document.addEventListener('DOMContentLoaded', function() {
-  // Attempt to restore settings using chrome.storage.sync
-  restoreData('userAccessibilityOptions');
+  // restore settings using chrome.storage.sync
+  restoreData(hearChatOptionKey);
 });
 
 document.getElementById('accessibilityOptionsForm').addEventListener('submit', function(event) {
   event.preventDefault(); // Prevent form from submitting the traditional way
   const data = gatherFormData();
-  saveData('userAccessibilityOptions', data); // Save using chrome.storage.sync
+  saveData(hearChatOptionKey, data); // Save using chrome.storage.sync
   alert('Settings saved successfully!'); // Simple feedback
 });
 
 function gatherFormData() {
-  // No changes here, as this function purely deals with DOM manipulation and data gathering
   const form = document.getElementById('accessibilityOptionsForm');
   const formData = {
     startingOptions: form.startingOptions.value,
@@ -29,7 +30,7 @@ function gatherFormData() {
 }
 
 function saveData(key, data) {
-  // Here's where the magic happens. We're using chrome.storage.sync.set to save our data.
+  // use chrome.storage.sync.set to save data.
   chrome.storage.sync.set({[key]: data}, function() {
     console.log('Settings have been saved');
   });
@@ -144,3 +145,4 @@ for (const soundSelectId of soundSelects ) {
     populateSelectDropdown(soundSelectId, soundNames);
     addChangeListenerToPlay(soundSelectId);
 }
+
