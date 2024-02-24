@@ -1,14 +1,22 @@
+// global variables
+
 const hearChatOptionKey = "hearChatStoredOptions";
 
+let formIsDirty = false;
+
+// const elements
+
+const optionsForm = document.getElementById('accessibilityOptionsForm');
 document.addEventListener('DOMContentLoaded', function() {
   // restore settings using chrome.storage.sync
   restoreData(hearChatOptionKey);
 });
 
-document.getElementById('accessibilityOptionsForm').addEventListener('submit', function(event) {
+optionsForm.addEventListener('submit', function(event) {
   event.preventDefault(); // Prevent form from submitting the traditional way
   const data = gatherFormData();
   saveData(hearChatOptionKey, data); // Save using chrome.storage.sync
+  formIsDirty = false;
   alert('Settings saved successfully!'); // Simple feedback
 });
 
@@ -37,7 +45,7 @@ function saveData(key, data) {
 }
 
 function restoreData(key) {
-  // Ah, the elegance of chrome.storage.sync.get in action. It fetches our data asynchronously.
+  // use chrome.storage.sync.get to fetch data asynchronously.
   chrome.storage.sync.get([key], function(result) {
     const savedData = result[key];
     if (!savedData) return; // If there's nothing saved, then there's no point in continuing.
@@ -52,7 +60,6 @@ function restoreData(key) {
     });
   });
 }
-
 
 // populate sound select boxes with available selections.
 
@@ -146,3 +153,19 @@ for (const soundSelectId of soundSelects ) {
     addChangeListenerToPlay(soundSelectId);
 }
 
+// add feature so the page will ask for confirmation before leaving with unsaved changes.
+
+// Listen for any change events on your form
+optionsForm.addEventListener('change', () => {
+  formIsDirty = true;
+});
+
+window.addEventListener('beforeunload', (event) => {
+  // If the form is dirty, ask for confirmation
+  if (formIsDirty) {
+    // message for browsers which allow custom message
+    const message = 'You have unsaved changes! Are you sure you want to leave?';
+    event.returnValue = message; // Chrome requires this to trigger the dialog
+    return message; // This is for other browsers
+  }
+});
