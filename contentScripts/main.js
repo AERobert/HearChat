@@ -1,7 +1,9 @@
+const hearChatOptionKey = "hearChatStoredOptions";
+
 // async function to handle fetching of the userSettings and sending them to the observer setup function
 
 async function getSettingsAndObserve() {
-  const userSettings = await restoreChromeSyncData("userAccessibilityOptions");
+  const userSettings = await restoreChromeSyncData(hearChatOptionKey);
     processedUserSettings = processSettings(userSettings);
     observeAndListen(processedUserSettings);
     console.log(processedUserSettings.startingSound);

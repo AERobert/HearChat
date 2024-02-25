@@ -1,17 +1,57 @@
+// global variables
+
+const hearChatOptionKey = "hearChatStoredOptions";
+
+let formIsDirty = false;
+
+// const elements
+
+const optionsForm = document.getElementById('accessibilityOptionsForm');
+const accessibilityAnnouncementsDiv = document.getElementById("announcementArea");
+
+// option defaults
+
+const hearChatOptionDefaults = {
+  "startingOptions": "off",
+  "startingSound": "game",
+  "startingAnnouncement": "Responding...",
+  "finishingOptions": "off",
+  "finishingSound": "ping",
+  "finishingAnnouncement": "Finished Responding",
+  "errorOptions": "off",
+  "errorSound": "error",
+  "errorAnnouncement": "An error occurred",
+  "desiredHeadingLevel": "3",
+}
+
+// announcement system
+
+// function to use div to announce messages to screen reader users
+function announceMessage(message) {
+  accessibilityAnnouncementsDiv.textContent = message;
+  setTimeout(() => {
+    accessibilityAnnouncementsDiv.textContent = '';
+    }, 1000);
+  console.log(`Just announced '${message}'`);
+}
+
+// add listeners to save the data when the form is submitted and to restore it when the document is loaded
+
 document.addEventListener('DOMContentLoaded', function() {
-  // Attempt to restore settings using chrome.storage.sync
-  restoreData('userAccessibilityOptions');
+  // restore settings using chrome.storage.sync
+  restoreData(hearChatOptionKey);
+
 });
 
-document.getElementById('accessibilityOptionsForm').addEventListener('submit', function(event) {
+optionsForm.addEventListener('submit', function(event) {
   event.preventDefault(); // Prevent form from submitting the traditional way
   const data = gatherFormData();
-  saveData('userAccessibilityOptions', data); // Save using chrome.storage.sync
-  alert('Settings saved successfully!'); // Simple feedback
+  saveData(hearChatOptionKey, data); // Save using chrome.storage.sync
+  formIsDirty = false;
+  announceMessage("saved"); // inform the user the saving was successful
 });
 
 function gatherFormData() {
-  // No changes here, as this function purely deals with DOM manipulation and data gathering
   const form = document.getElementById('accessibilityOptionsForm');
   const formData = {
     startingOptions: form.startingOptions.value,
@@ -29,29 +69,31 @@ function gatherFormData() {
 }
 
 function saveData(key, data) {
-  // Here's where the magic happens. We're using chrome.storage.sync.set to save our data.
+  // use chrome.storage.sync.set to save data.
   chrome.storage.sync.set({[key]: data}, function() {
     console.log('Settings have been saved');
   });
 }
 
+function updateFormWithData(data, form) {
+  Object.keys(data).forEach(field => {
+    if (form[field] && form[field].type === 'select-one') {
+      form[field].value = data[field];
+    } else if (form[field]) {
+      form[field].value = data[field];
+    }
+  });
+}
+
 function restoreData(key) {
-  // Ah, the elegance of chrome.storage.sync.get in action. It fetches our data asynchronously.
+  // use chrome.storage.sync.get to fetch data asynchronously.
   chrome.storage.sync.get([key], function(result) {
     const savedData = result[key];
     if (!savedData) return; // If there's nothing saved, then there's no point in continuing.
 
-    const form = document.getElementById('accessibilityOptionsForm');
-    Object.keys(savedData).forEach(field => {
-      if (form[field] && form[field].type === 'select-one') {
-        form[field].value = savedData[field];
-      } else if (form[field]) {
-        form[field].value = savedData[field];
-      }
-    });
+    updateFormWithData(savedData, optionsForm);
   });
 }
-
 
 // populate sound select boxes with available selections.
 
@@ -144,3 +186,34 @@ for (const soundSelectId of soundSelects ) {
     populateSelectDropdown(soundSelectId, soundNames);
     addChangeListenerToPlay(soundSelectId);
 }
+
+// add feature so the page will ask for confirmation before leaving with unsaved changes.
+
+// Listen for any change events on your form
+optionsForm.addEventListener('change', () => {
+  formIsDirty = true;
+});
+
+window.addEventListener('beforeunload', (event) => {
+  // If the form is dirty, ask for confirmation
+  if (formIsDirty) {
+    // message for browsers which allow custom message
+    const message = 'You have unsaved changes! Are you sure you want to leave?';
+    event.returnValue = message; // Chrome requires this to trigger the dialog
+    return message; // This is for other browsers
+  }
+});
+
+// setup form so hitting reset will actually revert to defaults
+
+optionsForm.addEventListener('reset', function(event) {
+    event.preventDefault(); // weather or not the user wants to reset, the defaults are not desired
+
+  const wantRestore = confirm("Restore Defaults? Your current settings will be replaced with the extension's defaults.");
+
+  if (wantRestore) {
+    updateFormWithData(hearChatOptionDefaults, this);
+    saveData(hearChatOptionKey, hearChatOptionDefaults);
+    announceMessage("Defaults restored");
+  };
+});
