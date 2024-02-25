@@ -9,6 +9,21 @@ let formIsDirty = false;
 const optionsForm = document.getElementById('accessibilityOptionsForm');
 const accessibilityAnnouncementsDiv = document.getElementById("announcementArea");
 
+// option defaults
+
+const hearChatOptionDefaults = {
+  "startingOptions": "off",
+  "startingSound": "game",
+  "startingAnnouncement": "Responding...",
+  "finishingOptions": "off",
+  "finishingSound": "ping",
+  "finishingAnnouncement": "Finished Responding",
+  "errorOptions": "off",
+  "errorSound": "error",
+  "errorAnnouncement": "An error occurred",
+  "desiredHeadingLevel": "3",
+}
+
 // announcement system
 
 // function to use div to announce messages to screen reader users
@@ -60,20 +75,23 @@ function saveData(key, data) {
   });
 }
 
+function updateFormWithData(data, form) {
+  Object.keys(data).forEach(field => {
+    if (form[field] && form[field].type === 'select-one') {
+      form[field].value = data[field];
+    } else if (form[field]) {
+      form[field].value = data[field];
+    }
+  });
+}
+
 function restoreData(key) {
   // use chrome.storage.sync.get to fetch data asynchronously.
   chrome.storage.sync.get([key], function(result) {
     const savedData = result[key];
     if (!savedData) return; // If there's nothing saved, then there's no point in continuing.
 
-    const form = document.getElementById('accessibilityOptionsForm');
-    Object.keys(savedData).forEach(field => {
-      if (form[field] && form[field].type === 'select-one') {
-        form[field].value = savedData[field];
-      } else if (form[field]) {
-        form[field].value = savedData[field];
-      }
-    });
+    updateFormWithData(savedData, optionsForm);
   });
 }
 
@@ -184,4 +202,18 @@ window.addEventListener('beforeunload', (event) => {
     event.returnValue = message; // Chrome requires this to trigger the dialog
     return message; // This is for other browsers
   }
+});
+
+// setup form so hitting reset will actually revert to defaults
+
+optionsForm.addEventListener('reset', function(event) {
+    event.preventDefault(); // weather or not the user wants to reset, the defaults are not desired
+
+  const wantRestore = confirm("Restore Defaults? Your current settings will be replaced with the extension's defaults.");
+
+  if (wantRestore) {
+    updateFormWithData(hearChatOptionDefaults, this);
+    saveData(hearChatOptionKey, hearChatOptionDefaults);
+    announceMessage("Defaults restored");
+  };
 });
