@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot Accessibility Options</title>
-    <link rel="stylesheet" href="options.css">
+    <title>HearChat Options</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Chatbot Accessibility Options</h1>
+    <h1>HearChat Options</h1>
     <form id="accessibilityOptionsForm">
         <section id="responseNotifications">
             <h2>Response Notifications</h2>
             <div id="startingNotification">
                 <h3>Starting</h3>
                 <label for="startingOptions">Options:</label>
-                <select id="startingOptions" size="4">
+                <select id="startingOptions" class="whatNotificationWanted" size="4">
                     <option value="off" selected>Off</option>
                     <option value="soundOnly">Sound Only</option>
                     <option value="announcementOnly">Announcement Only</option>
@@ -30,7 +30,7 @@
             <div id="finishingNotification">
                 <h3>Finishing</h3>
                 <label for="finishingOptions">Options:</label>
-                <select id="finishingOptions" size="4">
+                <select id="finishingOptions" class="whatNotificationWanted" size="4">
                     <option value="off" selected>Off</option>
                     <option value="soundOnly">Sound Only</option>
                     <option value="announcementOnly">Announcement Only</option>
@@ -46,7 +46,7 @@
             <div id="errorNotification">
                 <h3>Errors</h3>
                 <label for="errorOptions">Options:</label>
-                <select id="errorOptions" size="4">
+                <select id="errorOptions" class="whatNotificationWanted" size="4">
                     <option value="off" selected>Off</option>
                     <option value="soundOnly">Sound Only</option>
                     <option value="announcementOnly">Announcement Only</option>
@@ -76,7 +76,7 @@
         <button id="restoreButton" type="reset">Restore Defaults</button>
         <button id="saveButton" type="submit">Save Changes</button>
     </form>
-    <div id="announcementArea" role="alert"></div>
+    <div id="announcementArea" class="announcementArea" role="alert"></div>
 
   <script src="options.js"></script>
 </body>
