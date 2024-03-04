@@ -27,13 +27,8 @@
         }
     ],
     "background": {
-<<<<<<< HEAD
   "service_worker": "serviceWorkers/background.js"
 },
-=======
-        "service_worker": "serviceWorkers/background.js"
-    },
->>>>>>> dev
     "web_accessible_resources": [
         {
             "resources": [ 
