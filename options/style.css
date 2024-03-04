@@ -7,23 +7,22 @@ body {
     line-height: 1.6;
 }
 
-h1, h2, h3 {
-    color: #005A9C;
-}
-
 h1 {
     font-size: 24px;
     text-align: center;
+    color: #005A9C;
 }
 
 h2 {
     font-size: 20px;
     margin-top: 30px;
+    color: #005A9C;
 }
 
 h3 {
     font-size: 18px;
     margin-top: 15px;
+    color: #005A9C;
 }
 
 form {
@@ -86,7 +85,7 @@ button:hover {
     }
 }
 
-#announcementArea {
+.announcementArea {
     background-color: #e7f3fe;
     border-left: 6px solid #2196F3;
     padding: 20px;
@@ -96,4 +95,10 @@ button:hover {
 
 section {
     margin-bottom: 30px;
+}
+
+/* temp rule to hide the notification type selectors until I get them working.
+.whatNotificationWanted {
+  display:none;
+    visibility:hidden;
 }
