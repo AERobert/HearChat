@@ -123,28 +123,30 @@ function headingifyAllAssistantNameDivs(headingLevel) {
 headingifyAllAssistantNameDivs(4);
 
 // labeling
-// Assuming unlabeledButtonIcons is already declared and initialized
 
+// unlabeledButtonsIcons is defined in button_data.js
 // Function to add aria-labels to buttons based on SVG "d" attribute matching and ensuring no text content
 
 function labelButtonsWithIcons(button_data) {
   button_data.forEach(icon => {
-    // Find all buttons on the page
     const buttons = document.querySelectorAll('button');
-
+    
     buttons.forEach(button => {
-      // Make sure the button contains only an SVG (no additional text)
       const svg = button.querySelector('svg');
       const allTextInsideButton = button.textContent.trim();
       
-      // Check if SVG is directly inside the button and button has no other text
       if (svg && allTextInsideButton === '') {
-        // Find all paths within the SVG and check if any match the icon's svg property
-        const paths = svg.querySelectorAll('path');
-        paths.forEach(path => {
-          if (path.getAttribute('d') === icon.svg) {
-            // If a matching path is found, set the button's aria-label
-            button.setAttribute('aria-label', icon.name);
+        const elements = svg.querySelectorAll('path, polyline');
+        
+        elements.forEach(element => {
+          if (element.tagName === 'path') {
+            if (element.getAttribute('d') === icon.svg) {
+              button.setAttribute('aria-label', icon.name);
+            }
+          } else if (element.tagName === 'polyline') {
+            if (element.getAttribute('points') === icon.svg) {
+              button.setAttribute('aria-label', icon.name);
+            }
           }
         });
       }
