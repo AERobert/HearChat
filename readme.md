@@ -2,7 +2,7 @@
 
 A Chrome extension to make ChatGPT more accessible and friendly for screen reader users.
 
-## Features
+### Features
 
 1. automatically Adds headings to the ChatGPT assistant name for easier navigation.
 - works with all GPTs, along with old, and shared chats.
@@ -30,15 +30,19 @@ A Chrome extension to make ChatGPT more accessible and friendly for screen reade
 
 This extension is currently at a very early beta level and thus it should not be relied on to work at all times. The underlying code relies heavily on ChatGPT's current HTML structure, so any changes to that structure could break it partially or completely at any time.
 
-#### Installation
+### Installation
+Install the extension from the Chrome Web Store! [https://chromewebstore.google.com/detail/hearchat-accessible-and-e/jpgbcgnbpcplkbnihjmohdodnpdldacb](https://chromewebstore.google.com/detail/hearchat-accessible-and-e/jpgbcgnbpcplkbnihjmohdodnpdldacb)
+See below for basic instructions to install the latest version from this repo.
 
-As this extension is not currently published in the Chrome Web Store, it must be loaded manually using Chrome's developer tools:
 
-1. Download or clone the extension's repo.
-2. Navigate to `chrome://extensions/` in the Chrome browser.
-3. Enable 'Developer Mode'.
-4. Click 'Load unpacked' and select the extension folder from your local drive.
-5. Access the ChatGPT web app, and the extension will be activated automatically.
+1. Clone the extension's repo by running the following command in your terminal:
+   ```
+	git clone https://github.com/AERobert/HearChat.git
+   ```
+2. Open Google Chrome and navigate to `chrome://extensions/`.
+3. Enable 'Developer Mode' by toggling the switch in the top right corner.
+4. Click 'Load unpacked' and navigate to the `HearChat` folder you just cloned to your local drive. Select this folder.
+5. Access the [ChatGPT web app](https://chat.openai.com/). The extension will activate automatically when you use the web app.
 
 ### Usage 
 
