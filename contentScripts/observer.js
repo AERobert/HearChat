@@ -1,6 +1,6 @@
 /*
-    * utils.js
-    edited on 2024-02-16
+    * observer.js
+    edited on 2024-04-08
     * Robert Eggleston
     * defines monitors (in the form of events and observer objects) to the DOM in order to trigger code at specific changes.
     * expects to be run after utils.js and button_data.js
@@ -8,7 +8,7 @@
 
 // constants
 
-const WAITFORDOM = 500; // the amount of time (in ms) the initial code will wait for the DOM to be fully loaded.
+const HEADINGDEMONDELAY = 1000; // the amount of time (in ms) the backup heading demon will wait between checks.
 
 // functions to be used in the big observer 
 
@@ -30,8 +30,8 @@ function didRespondingFinish(node, finishingMessage, finishingSound) {
 function checkNewAssistantTurnToHeadingify(node, headingLevel) {
     // Check for adding of a new conversation turn div
     if (node.querySelector('div[data-testid^="conversation-turn-"]')) {
-        setTimeout(() => headingifyAllAssistantNameDivs(headingLevel), 500);
-        // If this condition is hit, it must be just after the page loaded so might as well get them all
+        setInterval(() => headingifyAllAssistantNameDivs(headingLevel), HEADINGDEMONDELAY);
+        // some update stops the observer from updating the first heading in a new chat, so this just sets up a demon to check continuously
     } else if (node.matches('div[data-testid^="conversation-turn-"]') && (isAssistantTurnDiv(node) === 1)) {
         let assistantNameDiv = getNameDiv(node);
         headingifyDiv(assistantNameDiv, headingLevel);
@@ -48,7 +48,7 @@ setTimeout(function() {
     // headingify all assistant names (for old or shared chats)
     headingifyAllAssistantNameDivs(settings.desiredHeadingLevel);
     console.log("should have just headingifyed some headings.");
-}, WAITFORDOM);
+}, HEADINGDEMONDELAY);
 
 // Let's set up a MutationObserver to listen for changes in the DOM
 const observer = new MutationObserver(mutations => {
