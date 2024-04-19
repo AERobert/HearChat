@@ -45,6 +45,9 @@ setTimeout(function() {
     // Execute the function to label the buttons
     labelButtonsWithIcons(unlabeledButtonIcons);
 
+    // execute function to give divs correct roles
+    fixButtonTypedDivs();
+
     // headingify all assistant names (for old or shared chats)
     headingifyAllAssistantNameDivs(settings.desiredHeadingLevel);
     console.log("should have just headingifyed some headings.");
@@ -52,8 +55,9 @@ setTimeout(function() {
 
 // Let's set up a MutationObserver to listen for changes in the DOM
 const observer = new MutationObserver(mutations => {
-  // For simplicity, we'll call labelButtonsWithIcons on any DOM change.
+  // For simplicity, we'll check for unlabeled buttons and roleless divs on any DOM change.
   labelButtonsWithIcons(unlabeledButtonIcons);
+    fixButtonTypedDivs();
 
   // Check for the specific addition or removal of the "Stop generating" button
   mutations.forEach(mutation => {

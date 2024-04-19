@@ -154,6 +154,19 @@ function labelButtonsWithIcons(button_data) {
   });
 }
 
+// function to add role="button" to all divs with the type="button" (fixes the model picker and the GPT options button)
+function fixButtonTypedDivs() {
+    // Select all div elements with a type="button" attribute
+    const divs = document.querySelectorAll('div[type="button"]');
+
+    // Iterate through each div and set its role to "button" if it isn't already set
+    divs.forEach(div => {
+        if (div.getAttribute('role') !== 'button') {
+            div.setAttribute('role', 'button');
+        }
+    });
+}
+
 // function to retrieve the users settings from Chrome's Sync storage.
 
 function restoreChromeSyncData(key) {
