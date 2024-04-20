@@ -141,11 +141,11 @@ function labelButtonsWithIcons(button_data) {
         elements.forEach(element => {
           if (element.tagName === 'path') {
             if (element.getAttribute('d') === icon.svg) {
-              button.setAttribute('aria-label', icon.name);
+              button.setAttribute('aria-label', icon.label);
             }
           } else if (element.tagName === 'polyline') {
             if (element.getAttribute('points') === icon.svg) {
-              button.setAttribute('aria-label', icon.name);
+              button.setAttribute('aria-label', icon.label);
             }
           }
         });
