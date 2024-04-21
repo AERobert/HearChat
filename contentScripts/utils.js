@@ -191,6 +191,12 @@ function toggleLastResponseSpeech() {
     }
 }
 
+function speakLastResponse(shouldSpeak) {
+    if(shouldSpeak) {
+        setTimeout(() => clickLastButtonWithLabel('speak', -1), 500);
+    }
+}
+
 function badResponseShortcut() {
     clickLastButtonWithLabel('thumbs down');
     setTimeout(() => [...document.querySelectorAll('button')].find(btn => btn.textContent.includes('More...')).click(), 250);

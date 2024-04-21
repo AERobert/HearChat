@@ -12,18 +12,19 @@ const HEADINGDEMONDELAY = 1000; // the amount of time (in ms) the backup heading
 
 // functions to be used in the big observer 
 
-function didRespondingStart(node, startingMessage, startingSound) {
+function didRespondingStart(node, settings) {
     if (node.matches('button[aria-label="Stop generating"]') || node.querySelector('button[aria-label="Stop generating"]')) {
         console.log('The GPT is now responding.');
-        announceMessage(startingMessage);
-        playSound(startingSound);
+        announceMessage(settings.startingAnnouncement);
+        playSound(settings.startingSound);
     }
 }
 
-function didRespondingFinish(node, finishingMessage, finishingSound) {
+function didRespondingFinish(node, settings) {
     if (node.querySelector('button[aria-label="Stop generating"]')) {
-        announceMessage(finishingMessage);
-        playSound(finishingSound);
+        announceMessage(settings.finishingAnnouncement);
+        playSound(settings.finishingSound);
+        speakLastResponse(settings.finishedSpeakResponse);
     }
 }
 
@@ -71,7 +72,7 @@ const observer = new MutationObserver(mutations => {
       // Check for the addition of nodes
       mutation.addedNodes.forEach(node => {
         if (node.nodeType === 1) { // Ensure it's an Element node
-          didRespondingStart(node, settings.startingAnnouncement, settings.startingSound);
+          didRespondingStart(node, settings);
           checkNewAssistantTurnToHeadingify(node, settings.desiredHeadingLevel);
         }
       });
@@ -79,7 +80,7 @@ const observer = new MutationObserver(mutations => {
       // Check for the removal of nodes
       mutation.removedNodes.forEach(node => {
         if (node.nodeType === 1) { // Ensure it's an Element node
-          didRespondingFinish(node, settings.finishingAnnouncement, settings.finishingSound);
+          didRespondingFinish(node, settings);
         }
       });
     }

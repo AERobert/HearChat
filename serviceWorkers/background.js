@@ -7,6 +7,7 @@ const hearChatOptionDefaults = {
   "finishingOptions": "off",
   "finishingSound": "ping",
   "finishingAnnouncement": "Finished Responding",
+    "finishedSpeakResponse": false,
   "errorOptions": "off",
   "errorSound": "error",
   "errorAnnouncement": "An error occured",
