@@ -1,6 +1,6 @@
 /*
     * observer.js
-    edited on 2024-04-08
+    edited on 2024-04-20
     * Robert Eggleston
     * defines monitors (in the form of events and observer objects) to the DOM in order to trigger code at specific changes.
     * expects to be run after utils.js and button_data.js
@@ -30,7 +30,7 @@ function didRespondingFinish(node, finishingMessage, finishingSound) {
 function checkNewAssistantTurnToHeadingify(node, headingLevel) {
     // Check for adding of a new conversation turn div
     if (node.querySelector('div[data-testid^="conversation-turn-"]')) {
-        setInterval(() => headingifyAllAssistantNameDivs(headingLevel), HEADINGDEMONDELAY);
+        setTimeout(() => headingifyAllAssistantNameDivs(headingLevel), HEADINGDEMONDELAY);
         // some update stops the observer from updating the first heading in a new chat, so this just sets up a demon to check continuously
     } else if (node.matches('div[data-testid^="conversation-turn-"]') && (isAssistantTurnDiv(node) === 1)) {
         let assistantNameDiv = getNameDiv(node);
@@ -57,6 +57,18 @@ function hearChatFirstSetup(settings) {
 
 function observeAndListen(settings) {// timeout to wait for the DOM to fully load before executing initial code.
 // Todo: figure out how to make this all more elegant.
+
+    // setup demon on timer to constantly check for issues (in case observer misses something)
+    const interval = setInterval(() => {
+        // check for unheadingified name divs
+        headingifyAllAssistantNameDivs(settings.desiredHeadingLevel);
+
+        // Execute the function to label the buttons
+        labelButtonsWithIcons(unlabeledButtonIcons);
+
+        // execute function to give divs correct roles
+        fixButtonTypedDivs();
+}, HEADINGDEMONDELAY);
 
 // Let's set up a MutationObserver to listen for changes in the DOM
 const observer = new MutationObserver(mutations => {
@@ -88,5 +100,10 @@ const observer = new MutationObserver(mutations => {
 // Start observing the document body for child list changes and subtree modifications
 observer.observe(document.body, { childList: true, subtree: true });
 
-console.log(settings.startingAnnouncement);
+// console.log(settings.startingAnnouncement);
+
+    return {
+        "interval": interval,
+        "observer": observer
+    }
 }

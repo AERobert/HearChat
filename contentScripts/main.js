@@ -1,5 +1,7 @@
 const hearChatOptionKey = "hearChatStoredOptions";
 
+let currDemons = {};
+
 // async function to handle fetching of the userSettings and sending them to the observer setup and first setup functions
 
 async function getSettingsBeginAndObserve() {
@@ -7,12 +9,32 @@ async function getSettingsBeginAndObserve() {
     processedUserSettings = processSettings(userSettings);
 
     hearChatFirstSetup(processedUserSettings);
-    observeAndListen(processedUserSettings);
+    currDemons = observeAndListen(processedUserSettings);
 
     // console.log(processedUserSettings.startingSound);
 }
 
 getSettingsBeginAndObserve();
+
+// Listener to react to storage changes and update settings without needing to reload
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (var key in changes) {
+        if (key === hearChatOptionKey) {  // Ensure you're only reacting to changes in your specific key
+            var newValue = changes[key].newValue;
+            console.log(`New value for ${key} is now:`, newValue);
+
+            // stop the demons running on the old settings
+            if(Object.keys(currDemons).length) {
+                currDemons.observer.disconnect();
+                clearInterval(currDemons.interval);
+            }
+
+            // Process the new settings
+            const processedNewSettings = processSettings(newValue);
+            currDemons = observeAndListen(processedNewSettings);
+        }
+    }
+});
 
 // add a button to the bottom of all effected pages that will take the user to the extension's options page
 
