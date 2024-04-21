@@ -1,6 +1,7 @@
 // global variables
 
 const hearChatOptionKey = "hearChatStoredOptions";
+const hearChatDefaultsKey = "hearChatDefaultOptions";
 
 let formIsDirty = false;
 
@@ -8,23 +9,6 @@ let formIsDirty = false;
 
 const optionsForm = document.getElementById('accessibilityOptionsForm');
 const accessibilityAnnouncementsDiv = document.getElementById("announcementArea");
-
-// option defaults
-
-const hearChatOptionDefaults = {
-  "startingOptions": "off",
-  "startingSound": "game",
-  "startingAnnouncement": "Responding...",
-  "finishingOptions": "off",
-  "finishingSound": "ping",
-  "finishingAnnouncement": "Finished Responding",
-  "finishedSpeakResponse": false,
-  "errorOptions": "off",
-  "errorSound": "error",
-  "errorAnnouncement": "An error occurred",
-  "desiredHeadingLevel": "3",
-  "showAllButtons": true,
-}
 
 // announcement system
 
@@ -95,6 +79,7 @@ function updateFormWithData(data, form) {
     }
   });
 }
+
 function restoreData(key) {
   // use chrome.storage.sync.get to fetch data asynchronously.
   chrome.storage.sync.get([key], function(result) {
@@ -217,13 +202,17 @@ window.addEventListener('beforeunload', (event) => {
 // setup form so hitting reset will actually revert to defaults
 
 optionsForm.addEventListener('reset', function(event) {
-    event.preventDefault(); // weather or not the user wants to reset, the defaults are not desired
+  event.preventDefault();
 
   const wantRestore = confirm("Restore Defaults? Your current settings will be replaced with the extension's defaults.");
 
   if (wantRestore) {
-    updateFormWithData(hearChatOptionDefaults, this);
-    saveData(hearChatOptionKey, hearChatOptionDefaults);
-    announceMessage("Defaults restored");
-  };
+    chrome.storage.sync.get([hearChatDefaultsKey], (result) => {
+
+      const defaults = result[hearChatDefaultsKey];
+      updateFormWithData(defaults, this);
+      saveData(hearChatOptionKey, defaults);
+      announceMessage("Defaults restored");
+    });
+  }
 });
