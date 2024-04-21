@@ -38,20 +38,25 @@ function checkNewAssistantTurnToHeadingify(node, headingLevel) {
     }
 }
 
+function hearChatFirstSetup(settings) {
+    setTimeout(function() {
+        // Execute the function to label the buttons
+        labelButtonsWithIcons(unlabeledButtonIcons);
+    
+        // execute function to give divs correct roles
+        fixButtonTypedDivs();
+    
+        // add the extra keyboard shortcuts
+            addShortcutsToButtons();
+    
+        // headingify all assistant names (for old or shared chats)
+        headingifyAllAssistantNameDivs(settings.desiredHeadingLevel);
+        // console.log("should have just headingifyed some headings.");
+    }, 500);
+}
+
 function observeAndListen(settings) {// timeout to wait for the DOM to fully load before executing initial code.
 // Todo: figure out how to make this all more elegant.
-
-setTimeout(function() {
-    // Execute the function to label the buttons
-    labelButtonsWithIcons(unlabeledButtonIcons);
-
-    // execute function to give divs correct roles
-    fixButtonTypedDivs();
-
-    // headingify all assistant names (for old or shared chats)
-    headingifyAllAssistantNameDivs(settings.desiredHeadingLevel);
-    console.log("should have just headingifyed some headings.");
-}, HEADINGDEMONDELAY);
 
 // Let's set up a MutationObserver to listen for changes in the DOM
 const observer = new MutationObserver(mutations => {

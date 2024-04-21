@@ -1,6 +1,6 @@
 /*
     * utils.js
-    edited on 2024-02-16
+    edited on 2024-04-20
     * Robert Eggleston
     * contains misc functions to be used lader in the extension
     * expects to be first content script run
@@ -152,6 +152,82 @@ function labelButtonsWithIcons(button_data) {
       }
     });
   });
+}
+
+// functions to interact with the labeled buttons
+function getButtonByLabel(label, index) {
+  // Construct the selector based on the provided label
+  const selector = `button[aria-label="${label}"]`;
+  
+  // Find all buttons with the specified aria-label
+  const buttons = Array.from(document.querySelectorAll(selector));
+  
+  // If no index is provided, return all found buttons as an array
+  if (index === undefined) {
+    return buttons;
+  }
+  
+  // Normalize the index
+  const normalizedIndex = index < 0 ? buttons.length + index : index;
+  
+  // Return the button at the specified index, or null if not found
+  return buttons[normalizedIndex] || null;
+}
+
+function clickLastButtonWithLabel(label) {
+    button = getButtonByLabel(label, -1);
+    if(button) {
+        button.click();
+    }
+}
+
+function toggleLastResponseSpeech() {
+    stopSpeakingButtons = getButtonByLabel('stop speaking');
+    if(stopSpeakingButtons.length) {
+        stopSpeakingButtons.forEach(button => button.click());
+    }
+    else {
+        clickLastButtonWithLabel('speak');
+    }
+}
+
+function badResponseShortcut() {
+    clickLastButtonWithLabel('thumbs down');
+    setTimeout(() => [...document.querySelectorAll('button')].find(btn => btn.textContent.includes('More...')).click(), 250);
+}
+
+function addShortcutsToButtons() {
+    document.addEventListener('keydown', function(event) {
+        // Check if Command (metaKey), Option (altKey), Shift (shiftKey) are pressed along with 'S' (event.key === 'S')
+        if (event.metaKey && event.altKey && event.shiftKey && event.code === 'KeyS') {
+            event.preventDefault();  // Prevent any default behavior associated with this key combination
+            toggleLastResponseSpeech();
+        }
+    });
+    
+    document.addEventListener('keydown', function(event) {
+        // Check if Command (metaKey), Option (altKey), Shift (shiftKey) are pressed along with 'R' (event.key === 'R')
+        if (event.metaKey && event.altKey && event.shiftKey && event.code === 'KeyR') {
+            event.preventDefault();  // Prevent any default behavior associated with this key combination
+            clickLastButtonWithLabel('regenerate');
+        }
+    });
+    
+    document.addEventListener('keydown', function(event) {
+        // Check if Command (metaKey), Option (altKey), Shift (shiftKey) are pressed along with 'B' (event.key === 'B')
+        if (event.metaKey && event.altKey && event.shiftKey && event.code === 'KeyB') {
+            event.preventDefault();  // Prevent any default behavior associated with this key combination
+            badResponseShortcut();
+        }
+    });
+    
+    document.addEventListener('keydown', function(event) {
+        // Check if Command (metaKey), Option (altKey), Shift (shiftKey) are pressed along with 'E' (event.key === 'E')
+        if (event.metaKey && event.altKey && event.shiftKey && event.code === 'KeyE') {
+            event.preventDefault();  // Prevent any default behavior associated with this key combination
+            clickLastButtonWithLabel('edit');
+        }
+    });
 }
 
 // function to add role="button" to all divs with the type="button" (fixes the model picker and the GPT options button)
