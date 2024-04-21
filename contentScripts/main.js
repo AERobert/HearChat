@@ -2,19 +2,22 @@ const hearChatOptionKey = "hearChatStoredOptions";
 
 let currDemons = {};
 
-// async function to handle fetching of the userSettings and sending them to the observer setup and first setup functions
+// async function to handle fetching of the userSettings and sending them to the observer setup function
 
 async function getSettingsBeginAndObserve() {
   const userSettings = await restoreChromeSyncData(hearChatOptionKey);
     processedUserSettings = processSettings(userSettings);
 
-    hearChatFirstSetup(processedUserSettings);
     currDemons = observeAndListen(processedUserSettings);
 
     // console.log(processedUserSettings.startingSound);
 }
 
+// launch first demon observer and checker
 getSettingsBeginAndObserve();
+
+// add the extra keyboard shortcuts
+        addShortcutsToButtons();
 
 // Listener to react to storage changes and update settings without needing to reload
 chrome.storage.onChanged.addListener(function(changes, namespace) {

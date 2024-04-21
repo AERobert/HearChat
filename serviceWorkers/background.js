@@ -11,6 +11,7 @@ const hearChatOptionDefaults = {
   "errorSound": "error",
   "errorAnnouncement": "An error occured",
   "desiredHeadingLevel": "3",
+  "showAllButtons": true
 }
 
 // listener to check if extension was just installed to set up the storage area

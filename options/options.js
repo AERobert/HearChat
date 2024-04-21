@@ -22,6 +22,7 @@ const hearChatOptionDefaults = {
   "errorSound": "error",
   "errorAnnouncement": "An error occurred",
   "desiredHeadingLevel": "3",
+  "showAllButtons": true,
 }
 
 // announcement system
@@ -63,7 +64,8 @@ function gatherFormData() {
     errorOptions: form.errorOptions.value,
     errorSound: form.errorSound.value,
     errorAnnouncement: form.errorAnnouncement.value,
-    desiredHeadingLevel: form.desiredHeadingLevel.value
+    desiredHeadingLevel: form.desiredHeadingLevel.value,
+    "showAllButtons": form.showAllButtons.checked
   };
   return formData;
 }
@@ -76,15 +78,21 @@ function saveData(key, data) {
 }
 
 function updateFormWithData(data, form) {
+  // Iterate over each field provided in the data object
   Object.keys(data).forEach(field => {
+    // Check if the form has the field and if it's a dropdown select
     if (form[field] && form[field].type === 'select-one') {
+      // Set the value of the dropdown to match the data
       form[field].value = data[field];
+    } else if (form[field] && form[field].type === 'checkbox') {
+      // If the field is a checkbox, set its checked property
+      form[field].checked = data[field];
     } else if (form[field]) {
+      // For other input types, set the value directly
       form[field].value = data[field];
     }
   });
 }
-
 function restoreData(key) {
   // use chrome.storage.sync.get to fetch data asynchronously.
   chrome.storage.sync.get([key], function(result) {

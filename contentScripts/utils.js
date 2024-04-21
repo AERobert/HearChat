@@ -243,6 +243,47 @@ function fixButtonTypedDivs() {
     });
 }
 
+// functions to effectively hide and unhide the buttons bars
+
+function replaceClass(element, originalClass, newClass) {
+    // Check if the element contains the original class
+    if (element.classList.contains(originalClass)) {
+        // Replace the original class with the new class
+        element.classList.replace(originalClass, newClass);
+    } else {
+        // Return null if the original class is not found
+        return null;
+    }
+}
+
+function unhideAllButtons() {
+  const invisibleDivs = document.querySelectorAll('div.invisible');
+  invisibleDivs.forEach(div => {
+    replaceClass(div, 'invisible', 'visible');
+  });
+}
+
+function hideAllButtonsButLast() {
+    const divs = document.querySelectorAll('div.visible, div.invisible');
+    const totalDivs = divs.length;
+
+    if (totalDivs > 2) {
+        replaceClass(divs[totalDivs-2], 'invisible', 'visible'); // the last edit button should be visible always
+
+        for (let i = 0; i < totalDivs - 2; i++) {
+            replaceClass(divs[i], 'visible', 'invisible');
+        }
+    }
+}
+
+function showAllButtons(shouldMakeVisible) {
+  if (shouldMakeVisible) {
+    unhideAllButtons();
+  } else {
+    hideAllButtonsButLast();
+  }
+}
+
 // function to retrieve the users settings from Chrome's Sync storage.
 
 function restoreChromeSyncData(key) {
