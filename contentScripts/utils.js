@@ -236,6 +236,21 @@ function addShortcutsToButtons() {
     });
 }
 
+// speech
+
+// OpenAI speech
+
+function isAudioPlaying(audio) {
+  return !audio.paused && !audio.ended && audio.currentTime > 0;
+}
+
+function setOpenaiSpeechRate(desiredSpeed) {
+  const openaiAudioElem = document.querySelector('audio');
+  if (isAudioPlaying(openaiAudioElem) && openaiAudioElem.playbackRate !== desiredSpeed) {
+    openaiAudioElem.playbackRate = parseFloat(desiredSpeed);
+  }
+}
+
 // function to add role="button" to all divs with the type="button" (fixes the model picker and the GPT options button)
 function fixButtonTypedDivs() {
     // Select all div elements with a type="button" attribute

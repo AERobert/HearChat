@@ -8,7 +8,7 @@
 
 // constants
 
-const HEADINGDEMONDELAY = 1000; // the amount of time (in ms) the backup heading demon will wait between checks.
+const INTERVALDEMONDELAY = 500; // the amount of time (in ms) the backup heading demon will wait between checks.
 
 // functions to be used in the big observer 
 
@@ -31,7 +31,7 @@ function didRespondingFinish(node, settings) {
 function checkNewAssistantTurnToHeadingify(node, headingLevel) {
     // Check for adding of a new conversation turn div
     if (node.querySelector('div[data-testid^="conversation-turn-"]')) {
-        setTimeout(() => headingifyAllAssistantNameDivs(headingLevel), HEADINGDEMONDELAY);
+        setTimeout(() => headingifyAllAssistantNameDivs(headingLevel), INTERVALDEMONDELAY);
         // some update stops the observer from updating the first heading in a new chat, so this just sets up a demon to check continuously
     } else if (node.matches('div[data-testid^="conversation-turn-"]') && (isAssistantTurnDiv(node) === 1)) {
         let assistantNameDiv = getNameDiv(node);
@@ -52,13 +52,16 @@ function hearChatGeneralAccesibilityCheck(settings) {
 
     // show buttons for each response, if the user wants
     showAllButtons(settings.showAllButtons);
+
+    // set Openai's speech rate to the desired reading speed
+    setOpenaiSpeechRate(settings.openaiSpeechReadingSpeed);
 }
 
 function observeAndListen(settings) {// timeout to wait for the DOM to fully load before executing initial code.
 // Todo: figure out how to make this all more elegant.
 
     // setup demon on timer to constantly check for issues (in case observer misses something)
-    const interval = setInterval(() => hearChatGeneralAccesibilityCheck(settings), HEADINGDEMONDELAY);
+    const interval = setInterval(() => hearChatGeneralAccesibilityCheck(settings), INTERVALDEMONDELAY);
 
 // Let's set up a MutationObserver to listen for changes in the DOM
 const observer = new MutationObserver(mutations => {

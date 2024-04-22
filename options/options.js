@@ -47,6 +47,7 @@ function gatherFormData() {
     finishingSound: form.finishingSound.value,
     finishingAnnouncement: form.finishingAnnouncement.value,
     "finishedSpeakResponse": form.finishedSpeakResponse.checked,
+    "openaiSpeechReadingSpeed": form.openaiSpeechReadingSpeed.value,
     errorOptions: form.errorOptions.value,
     errorSound: form.errorSound.value,
     errorAnnouncement: form.errorAnnouncement.value,
