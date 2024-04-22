@@ -44,6 +44,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 // creates button element and appends it to the body
 const optionsButton = document.createElement('button');
 optionsButton.innerText = 'HearChat';
+optionsButton.id = 'hearChatOptionsButton';
 optionsButton.style.position = 'fixed';
 optionsButton.style.bottom = '20px';
 optionsButton.style.right = '20px';
@@ -51,10 +52,4 @@ optionsButton.style.zIndex = '1000';
 document.body.appendChild(optionsButton);
 
 // Add click event listener to open the options page in a new tab
-optionsButton.addEventListener('click', function() {
-  if (chrome.runtime.openOptionsPage) {
-    chrome.runtime.openOptionsPage();
-  } else {
-    window.open(chrome.runtime.getURL('options/options.html'));
-  }
-});
+optionsButton.addEventListener('click', openHearChatOptionsPage);

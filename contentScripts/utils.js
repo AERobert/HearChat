@@ -234,6 +234,14 @@ function addShortcutsToButtons() {
             clickLastButtonWithLabel('edit');
         }
     });
+
+    document.addEventListener('keydown', function(event) {
+        // Check if Command (metaKey), Option (altKey), Shift (shiftKey) are pressed along with 'H' (event.key === 'H')
+        if (event.metaKey && event.altKey && event.shiftKey && event.code === 'KeyH') {
+            event.preventDefault();  // Prevent any default behavior associated with this key combination
+            openHearChatOptionsPage();
+        }
+    });
 }
 
 // speech
@@ -351,3 +359,11 @@ function processSettings (settingsData) {
     return settingsData;
 }
 
+// function to open the options page
+function openHearChatOptionsPage() {
+  if (chrome.runtime.openOptionsPage) {
+    chrome.runtime.openOptionsPage();
+  } else {
+    window.open(chrome.runtime.getURL('options/options.html'));
+  }
+}
