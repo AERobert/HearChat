@@ -2,19 +2,20 @@ const hearChatOptionKey = "hearChatStoredOptions";
 const hearChatDefaultsKey = "hearChatDefaultOptions";
 
 const hearChatOptionDefaults = {
-  "startingOptions": "off",
-  "startingSound": "game",
-  "startingAnnouncement": "Responding...",
-  "finishingOptions": "off",
-  "finishingSound": "ping",
-  "finishingAnnouncement": "Finished Responding",
-  "finishedSpeakResponse": false,
-  "openaiSpeechReadingSpeed": 1.0,
-  "errorOptions": "off",
-  "errorSound": "error",
-  "errorAnnouncement": "An error occured",
-  "desiredHeadingLevel": "3",
-  "showAllButtons": true
+    "startingOptions": "off",
+    "startingSound": "game",
+    "startingAnnouncement": "Responding...",
+    "finishingOptions": "off",
+    "finishingSound": "ping",
+    "finishingAnnouncement": "Finished Responding",
+    "finishedSpeakResponse": false,
+    "openaiSpeechReadingSpeed": 1.0,
+    "errorOptions": "off",
+    "errorSound": "error",
+    "errorAnnouncement": "An error occured",
+    "desiredHeadingLevel": "3",
+    "showAllButtons": true,
+    "swapEnterShiftEnterOnPrompt": false
 };
 
 // Function to save data to a particular key

@@ -55,6 +55,9 @@ function hearChatGeneralAccesibilityCheck(settings) {
 
     // set Openai's speech rate to the desired reading speed
     setOpenaiSpeechRate(settings.openaiSpeechReadingSpeed);
+
+    // reverse enter and shift-enter on prompt textarea (if wanted)
+    togglePromptEnterListener(settings.swapEnterShiftEnterOnPrompt);
 }
 
 function observeAndListen(settings) {// timeout to wait for the DOM to fully load before executing initial code.

@@ -52,7 +52,8 @@ function gatherFormData() {
     errorSound: form.errorSound.value,
     errorAnnouncement: form.errorAnnouncement.value,
     desiredHeadingLevel: form.desiredHeadingLevel.value,
-    "showAllButtons": form.showAllButtons.checked
+    "showAllButtons": form.showAllButtons.checked,
+    "swapEnterShiftEnterOnPrompt": form.swapEnterShiftEnterOnPrompt.checked
   };
   return formData;
 }
