@@ -186,7 +186,7 @@ for (const soundSelectId of soundSelects ) {
 
 // add feature so the page will ask for confirmation before leaving with unsaved changes.
 
-// Listen for any change events on your form
+// Listen for any change events on the form
 optionsForm.addEventListener('change', () => {
   formIsDirty = true;
 });
@@ -212,9 +212,21 @@ optionsForm.addEventListener('reset', function(event) {
     chrome.storage.sync.get([hearChatDefaultsKey], (result) => {
 
       const defaults = result[hearChatDefaultsKey];
-      updateFormWithData(defaults, this);
+      // updateFormWithData(defaults, this);
       saveData(hearChatOptionKey, defaults);
       announceMessage("Defaults restored");
     });
   }
+});
+
+// Listener to react to storage changes and update settings without needing to reload
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (var key in changes) {
+        if (key === hearChatOptionKey) {  // Ensure listener only reacting to changes in the primary key
+            let newData = changes[key].newValue;
+            const form = document.getElementById('accessibilityOptionsForm');
+
+            updateFormWithData(newData, form);
+        }
+    }
 });

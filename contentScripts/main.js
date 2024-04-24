@@ -22,9 +22,9 @@ getSettingsBeginAndObserve();
 // Listener to react to storage changes and update settings without needing to reload
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (var key in changes) {
-        if (key === hearChatOptionKey) {  // Ensure you're only reacting to changes in your specific key
-            var newValue = changes[key].newValue;
-            console.log(`New value for ${key} is now:`, newValue);
+        if (key === hearChatOptionKey) {  // Ensure the listener only reacts to changes in the primary key
+            let newValue = changes[key].newValue;
+            // console.log(`New value for ${key} is now:`, newValue);
 
             // stop the demons running on the old settings
             if(Object.keys(currDemons).length) {
