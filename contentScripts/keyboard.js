@@ -74,6 +74,15 @@ function addShortcutsToButtons() {
     });
 
     document.addEventListener('keydown', function(event) {
+        // attach 'Enter' plus the assigned key combination (based on the system) to swap the enter and shift-enter functionality
+        if (isShortcutPressed(event, 'Enter')) {
+            event.preventDefault();  // Prevent any default behavior associated with this key combination
+            updateSetting('hearChatStoredOptions', 'swapEnterShiftEnterOnPrompt');
+            announceMessage('Swapped enter and shift-enter (use shift-enter to submit messages)');
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
         // attach 'H' to shortcut that opens the HearChat options page
         if (isShortcutPressed(event, 'KeyH')) {
             event.preventDefault();  // Prevent any default behavior associated with this key combination

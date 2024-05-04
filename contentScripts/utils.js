@@ -325,3 +325,33 @@ function openHearChatOptionsPage() {
     window.open(chrome.runtime.getURL('options/options.html'));
   }
 }
+
+// functions to update settings automatically
+
+async function updateSetting(storageKey, settingKey, newValue = null) {
+    // Get the current settings from Chrome Storage
+    let userSettings = await restoreChromeSyncData(storageKey);
+    
+    // If newValue is not null, set the settingKey to the new value
+    if (newValue !== null) {
+        userSettings[settingKey] = newValue;
+    } else {
+        // Otherwise, invert the current value of the settingKey
+        userSettings[settingKey] = !userSettings[settingKey];
+    }
+
+    // Save the updated settings back to Chrome Storage
+    chrome.storage.sync.set({ [storageKey]: userSettings });
+}
+
+// Function to retrieve data from Chrome Storage
+function restoreChromeSyncData(key) {
+    return new Promise((resolve, reject) => {
+        chrome.storage.sync.get(key, (data) => {
+            if (chrome.runtime.lastError) {
+                return reject(chrome.runtime.lastError);
+            }
+            resolve(data[key]);
+        });
+    });
+}
