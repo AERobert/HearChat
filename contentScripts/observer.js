@@ -58,6 +58,9 @@ function hearChatGeneralAccesibilityCheck(settings) {
 
     // reverse enter and shift-enter on prompt textarea (if wanted)
     togglePromptEnterListener(settings.swapEnterShiftEnterOnPrompt);
+
+    // add listener to block propagation of the enter shift-enter swap shortcut
+    stopModEnterOnPromptPropagating();
 }
 
 function observeAndListen(settings) {// timeout to wait for the DOM to fully load before executing initial code.

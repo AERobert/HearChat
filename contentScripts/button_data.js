@@ -1,3 +1,5 @@
+// data object containing data to label the buttons
+
 const unlabeledButtonIcons = [
   {
     "label": "regenerate",
@@ -110,3 +112,8 @@ const unlabeledButtonIcons = [
     "svg": "M4.42 0.75H2.8625H2.75C1.64543 0.75 0.75 1.64543 0.75 2.75V11.65C0.75 12.7546 1.64543 13.65 2.75 13.65H2.8625C2.8625 13.65 2.8625 13.65 2.8625 13.65C2.8625 13.65 4.00751 13.65 4.42 13.65M13.98 13.65H15.5375H15.65C16.7546 13.65 17.65 12.7546 17.65 11.65V2.75C17.65 1.64543 16.7546 0.75 15.65 0.75H15.5375H13.98"
   }
 ]
+
+// other constants
+
+const hearChatOptionKey = "hearChatStoredOptions";
+

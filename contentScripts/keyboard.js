@@ -77,8 +77,7 @@ function addShortcutsToButtons() {
         // attach 'Enter' plus the assigned key combination (based on the system) to swap the enter and shift-enter functionality
         if (isShortcutPressed(event, 'Enter')) {
             event.preventDefault();  // Prevent any default behavior associated with this key combination
-            updateSetting('hearChatStoredOptions', 'swapEnterShiftEnterOnPrompt');
-            announceMessage('Swapped enter and shift-enter (use shift-enter to submit messages)');
+            toggleEnterSettingOnPrompt();
         }
     });
 
@@ -93,26 +92,47 @@ function addShortcutsToButtons() {
 
 // easily invert enter and shift-enter on the prompt textarea
 function handleEnterOnPrompt(event) {
-    if (event.shiftKey && event.key === 'Enter') {
+    let justEnterOrShiftEnter = !(event.altKey || event.metaKey || event.ctrlKey); // boolean checking if the current keys do not have any modifiers pressed
+
+    if (justEnterOrShiftEnter && event.shiftKey && event.code === 'Enter') {
         const sendButton = document.querySelector('button[data-testid="send-button"]');
         event.preventDefault();
+        // browserSpeakString('shift-enter pressed to send');
         sendButton.click();
     }
-    else if (event.key === 'Enter') {
+    else if (justEnterOrShiftEnter && event.key === 'Enter') {
         event.stopPropagation();
+        // browserSpeakString('enter pressed for newline');
     }
 }
 
 function togglePromptEnterListener(enable) {
     const promptTextarea = document.getElementById('prompt-textarea');
     // Check the data attribute instead of hasEventListener
-    const listenerOnTextarea = (promptTextarea && promptTextarea.getAttribute('data-event-keydown') === 'true');
+    const dataAttribute = 'data-event-keydown-shiftEnterSending';
+    const listenerOnTextarea = (promptTextarea && promptTextarea.getAttribute(dataAttribute) === 'true');
 
     if (enable && !listenerOnTextarea) {
         promptTextarea.addEventListener('keydown', handleEnterOnPrompt);
-        promptTextarea.setAttribute('data-event-keydown', 'true'); // Set the attribute when adding the listener
+        promptTextarea.setAttribute(dataAttribute, 'true'); // Set the attribute when adding the listener
     } else if (!enable && listenerOnTextarea) {
         promptTextarea.removeEventListener('keydown', handleEnterOnPrompt);
-        promptTextarea.setAttribute('data-event-keydown', 'false'); // Reset the attribute when removing the listener
+        promptTextarea.setAttribute(dataAttribute, 'false'); // Reset the attribute when removing the listener
+    }
+}
+
+function stopModEnterOnPromptPropagating() {
+    const promptTextarea = document.getElementById('prompt-textarea');
+    const dataAttribute = 'data-event-keydown-stopEnterShortcutBubbling';
+    const promptTextareaNotStoppingPropagation = (promptTextarea && promptTextarea.getAttribute(dataAttribute) !== 'true');
+
+    if (promptTextarea && promptTextareaNotStoppingPropagation) {
+        promptTextarea.setAttribute(dataAttribute, 'true'); // Set the attribute when adding the listener
+        promptTextarea.addEventListener('keydown', function(event) {
+            if (isShortcutPressed(event, 'Enter')) {
+                event.stopPropagation();
+                toggleEnterSettingOnPrompt();
+            }
+        });
     }
 }

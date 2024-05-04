@@ -204,6 +204,46 @@ function badResponseShortcut() {
 
 // speech
 
+// browser speech (added for debugging for now)
+
+function browserSpeakString(text) {
+  // Check if speech synthesis is supported
+  if (!'speechSynthesis' in window) {
+    console.error('Speech synthesis not supported in this browser.');
+    return;
+  }
+
+  // Create a new speech synthesis utterance
+  var utterance = new SpeechSynthesisUtterance(text);
+
+  // Optionally, customize the utterance properties
+  utterance.volume = 1; // Volume: 0 to 1
+  utterance.rate = 5; // Speed: 0.1 to 10
+  utterance.pitch = 1; // Pitch: 0 to 2
+
+  // Use the default system voice or choose a specific one
+  utterance.voice = speechSynthesis.getVoices().find(voice => voice.default);
+
+  // Speak the text
+  speechSynthesis.speak(utterance);
+}
+
+function stopBrowserSpeech() {
+  // Check if speechSynthesis is supported
+  if (!('speechSynthesis' in window)) {
+    console.error('Speech synthesis not supported in this browser.');
+    return;
+  }
+
+  // Check if speech is currently active
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel(); // Stop the speech synthesis
+    console.log('Speech stopped.');
+  } else {
+    console.log('No active speech.');
+  }
+}
+
 // OpenAI speech
 
 function isAudioPlaying(audio) {
@@ -328,20 +368,26 @@ function openHearChatOptionsPage() {
 
 // functions to update settings automatically
 
-async function updateSetting(storageKey, settingKey, newValue = null) {
+
+// Function to set the value of a specific setting
+async function setSettingValue(storageKey, settingKey, newValue) {
     // Get the current settings from Chrome Storage
     let userSettings = await restoreChromeSyncData(storageKey);
-    
-    // If newValue is not null, set the settingKey to the new value
-    if (newValue !== null) {
-        userSettings[settingKey] = newValue;
-    } else {
-        // Otherwise, invert the current value of the settingKey
-        userSettings[settingKey] = !userSettings[settingKey];
-    }
+
+    // Set the settingKey to the new value
+    userSettings[settingKey] = newValue;
 
     // Save the updated settings back to Chrome Storage
     chrome.storage.sync.set({ [storageKey]: userSettings });
+}
+
+// Function to retrieve the value of a specific setting
+async function getSettingValue(storageKey, settingKey) {
+    // Get the current settings from Chrome Storage
+    let userSettings = await restoreChromeSyncData(storageKey);
+    
+    // Return the value of the specific settingKey, or null if it doesn't exist
+    return userSettings.hasOwnProperty(settingKey) ? userSettings[settingKey] : null;
 }
 
 // Function to retrieve data from Chrome Storage
@@ -351,7 +397,16 @@ function restoreChromeSyncData(key) {
             if (chrome.runtime.lastError) {
                 return reject(chrome.runtime.lastError);
             }
-            resolve(data[key]);
+            resolve(data[key] || {});
         });
     });
+}
+
+// function to toggle enter and shift-enter and settings
+
+async function toggleEnterSettingOnPrompt() {
+    let enterSettingValue = await getSettingValue(hearChatOptionKey, 'swapEnterShiftEnterOnPrompt');
+    await setSettingValue(hearChatOptionKey, 'swapEnterShiftEnterOnPrompt', !enterSettingValue);
+    togglePromptEnterListener(!enterSettingValue);
+    announceMessage(`Enter and shift-enter swapped: ${!enterSettingValue ? 'use shift-enter to submit messages and enter to make a newline' : 'use enter to submit messages and shift-enter to make newlines'}.`);
 }

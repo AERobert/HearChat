@@ -1,5 +1,3 @@
-const hearChatOptionKey = "hearChatStoredOptions";
-
 let currDemons = {};
 
 // async function to handle fetching of the userSettings and sending them to the observer setup function
