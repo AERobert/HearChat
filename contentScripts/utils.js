@@ -129,7 +129,7 @@ headingifyAllAssistantNameDivs(4);
 
 function labelButtonsWithIcons(button_data) {
   button_data.forEach(icon => {
-    const buttons = document.querySelectorAll('button');
+    const buttons = document.querySelectorAll('button, [role="button"]');
     
     buttons.forEach(button => {
       const svg = button.querySelector('svg');
