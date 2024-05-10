@@ -46,6 +46,9 @@ function hearChatGeneralAccesibilityCheck(settings) {
     // execute function to give divs correct roles
     fixButtonTypedDivs();
 
+    // fix checkbox buttons
+    updateCheckboxButtons();
+
     // headingify all assistant names (for old or shared chats)
     headingifyAllAssistantNameDivs(settings.desiredHeadingLevel);
     // console.log("should have just headingifyed some headings.");

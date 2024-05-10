@@ -257,6 +257,30 @@ function setOpenaiSpeechRate(desiredSpeed) {
   }
 }
 
+// function to fix the checkbox buttons in the custom instructions screen
+function updateCheckboxButtons() {
+    // Select all checkboxes within button elements
+    const checkboxButtons = document.querySelectorAll('button input[type="checkbox"]');
+
+    // Iterate over each checkbox found
+    checkboxButtons.forEach(checkboxButton => {
+        // Find the closest parent button element
+        const parentButton = checkboxButton.closest('button');
+        
+        if (parentButton) {
+            // Set the role to 'checkbox' if it's not already set
+            if (parentButton.getAttribute('role') !== 'checkbox') {
+                parentButton.setAttribute('role', 'checkbox');
+            }
+
+            // Set the initial state of 'aria-checked' based on the checkbox's checked state
+            parentButton.setAttribute('aria-checked', checkboxButton.checked.toString());
+
+            checkboxButton.setAttribute('tabindex', '-1');
+        }
+    });
+}
+
 // function to add role="button" to all divs with the type="button" (fixes the model picker and the GPT options button)
 function fixButtonTypedDivs() {
     // Select all div elements with a type="button" attribute
