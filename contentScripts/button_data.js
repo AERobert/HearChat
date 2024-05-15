@@ -176,6 +176,10 @@ const unlabeledButtonIcons = [
     { // label for the button that dissmesses the GPT when @ing one of them into a chat, added on 2024-05-15
         "label": "dismiss GPT",
         "svg": "M7.293 7.293a1 1 0 0 1 1.414 0L12 10.586l3.293-3.293a1 1 0 1 1 1.414 1.414L13.414 12l3.293 3.293a1 1 0 0 1-1.414 1.414L12 13.414l-3.293 3.293a1 1 0 0 1-1.414-1.414L10.586 12 7.293 8.707a1 1 0 0 1 0-1.414"
+    },
+    { // label for the avatar chooser on the edit GPT screen, added on 2024-05-14
+        "label": "avatar",
+        "svg": "M12 3a1 1 0 0 1 1 1v7h7a1 1 0 1 1 0 2h-7v7a1 1 0 1 1-2 0v-7H4a1 1 0 1 1 0-2h7V4a1 1 0 0 1 1-1"
     }
 ]
 
