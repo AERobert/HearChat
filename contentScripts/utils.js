@@ -128,30 +128,51 @@ headingifyAllAssistantNameDivs(4);
 // Function to add aria-labels to buttons based on SVG "d" attribute matching and ensuring no text content
 
 function labelButtonsWithIcons(button_data) {
-  button_data.forEach(icon => {
-    const buttons = document.querySelectorAll('button, [role="button"]');
-    
-    buttons.forEach(button => {
-      const svg = button.querySelector('svg');
-      const allTextInsideButton = button.textContent.trim();
-      
-      if (svg && allTextInsideButton === '') {
-        const elements = svg.querySelectorAll('path, polyline');
-        
-        elements.forEach(element => {
-          if (element.tagName === 'path') {
-            if (element.getAttribute('d') === icon.svg) {
-              button.setAttribute('aria-label', icon.label);
+  const buttons = document.querySelectorAll('button, [role="button"]');
+
+  buttons.forEach(button => {
+    const svg = button.querySelector('svg');
+    const allTextInsideButton = button.textContent.trim();
+
+    if (svg && allTextInsideButton === '') {
+        const matchingIcon = getMatchingLabel(svg, button_data);
+        if(matchingIcon) {
+            const label = matchingIcon.label;
+            const hcid = matchingIcon?.hcid;
+            if (label && button.getAttribute('aria-label') !== label) {
+                button.setAttribute('aria-label', label);
             }
-          } else if (element.tagName === 'polyline') {
-            if (element.getAttribute('points') === icon.svg) {
-              button.setAttribute('aria-label', icon.label);
+            if (hcid && button.getAttribute('data-hcid') != hcid) {
+                button.setAttribute('data-hcid', hcid);
             }
-          }
-        });
+        }
+        }
+    });
+}
+
+function getMatchingLabel(svg, button_data) {
+  const elements = svg.querySelectorAll('path, polyline');
+
+  for (const element of elements) {
+    const matchingIcon = button_data.find(icon => {
+      if (element.tagName === 'path') {
+        return element.getAttribute('d') === icon.svg;
+      } else if (element.tagName === 'polyline') {
+        return element.getAttribute('points') === icon.svg;
       }
     });
+
+    if (matchingIcon) {
+      return matchingIcon;
+    }
+  }
+
+  const svgInnerHTML = svg.innerHTML.trim();
+  const matchingIcon = button_data.find(icon => {
+    return svgInnerHTML.includes(icon.svg);
   });
+
+  return (matchingIcon || null);
 }
 
 // functions to interact with the labeled buttons

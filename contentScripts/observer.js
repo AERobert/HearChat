@@ -17,11 +17,17 @@ function didRespondingStart(node, settings) {
         console.log('The GPT is now responding.');
         announceMessage(settings.startingAnnouncement);
         playSound(settings.startingSound);
+        node.setAttribute('data-sending', 'true');
     }
 }
 
 function didRespondingFinish(node, settings) {
     if (node.querySelector('button[aria-label="Stop generating"]')) {
+        announceMessage(settings.finishingAnnouncement);
+        playSound(settings.finishingSound);
+        speakLastResponse(settings.finishedSpeakResponse);
+    }
+    else if (node.getAttribute('aria-label') === 'send message' && node.getAttribute('data-sending') === 'true') {
         announceMessage(settings.finishingAnnouncement);
         playSound(settings.finishingSound);
         speakLastResponse(settings.finishedSpeakResponse);
@@ -76,7 +82,7 @@ function observeAndListen(settings) {// timeout to wait for the DOM to fully loa
 const observer = new MutationObserver(mutations => {
   // For simplicity, we'll check for unlabeled buttons and roleless divs on any DOM change.
   labelButtonsWithIcons(unlabeledButtonIcons);
-    fixButtonTypedDivs();
+  fixButtonTypedDivs();
 
   // Check for the specific addition or removal of the "Stop generating" button
   mutations.forEach(mutation => {
@@ -95,14 +101,23 @@ const observer = new MutationObserver(mutations => {
           didRespondingFinish(node, settings);
         }
       });
+    } else if (mutation.type === 'attributes' && mutation.target.getAttribute('data-hcid') === 'sendStopMessage') {
+      const button = mutation.target;
+      const ariaLabel = button.getAttribute('aria-label');
+
+      if (ariaLabel === 'Stop generating') {
+        // Trigger the start responding code
+        didRespondingStart(button, settings);
+      } else if (ariaLabel === 'send message') {
+        // Trigger the stopped responding code
+        didRespondingFinish(button, settings);
+      }
     }
   });
 });
 
-// Start observing the document body for child list changes and subtree modifications
-observer.observe(document.body, { childList: true, subtree: true });
-
-// console.log(settings.startingAnnouncement);
+// Start observing the document body for child list changes, subtree modifications, and attribute changes
+observer.observe(document.body, { childList: true, subtree: true, attributeFilter: ['aria-label'] });
 
     return {
         "interval": interval,
