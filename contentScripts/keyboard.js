@@ -64,12 +64,20 @@ function addShortcutsToButtons() {
             badResponseShortcut();
         }
     });
-    
+
     document.addEventListener('keydown', function(event) {
         // attach 'E' to shortcut to edit the last input
         if (isShortcutPressed(event, 'KeyE')) {
             event.preventDefault();  // Prevent any default behavior associated with this key combination
             clickLastButtonWithLabel('edit');
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        // attach 'U' to shortcut to upload files
+        if (isShortcutPressed(event, 'KeyU')) {
+            event.preventDefault();  // Prevent any default behavior associated with this key combination
+            clickLastButtonWithLabel('attach files');
         }
     });
 

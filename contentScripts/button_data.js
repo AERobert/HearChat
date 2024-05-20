@@ -180,6 +180,10 @@ const unlabeledButtonIcons = [
     { // label for the avatar chooser on the edit GPT screen, added on 2024-05-14
         "label": "avatar",
         "svg": "M12 3a1 1 0 0 1 1 1v7h7a1 1 0 1 1 0 2h-7v7a1 1 0 1 1-2 0v-7H4a1 1 0 1 1 0-2h7V4a1 1 0 0 1 1-1"
+    },
+    {
+        "label": "attach files",
+        "svg": "M9 7a5 5 0 0 1 10 0v8a7 7 0 1 1-14 0V9a1 1 0 0 1 2 0v6a5 5 0 0 0 10 0V7a3 3 0 1 0-6 0v8a1 1 0 1 0 2 0V9a1 1 0 1 1 2 0v6a3 3 0 1 1-6 0z"
     }
 ]
 
