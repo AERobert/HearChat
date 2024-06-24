@@ -53,7 +53,7 @@ function addShortcutsToButtons() {
         // attach r to regenerate shortcut.
         if (isShortcutPressed(event, 'KeyR')) {
             event.preventDefault();  // Prevent any default behavior associated with this key combination
-            clickLastButtonWithLabel('regenerate');
+            clickLastButtonWithLabel('Retry');
         }
     });
     
@@ -66,10 +66,10 @@ function addShortcutsToButtons() {
     });
 
     document.addEventListener('keydown', function(event) {
-        // attach 'E' to shortcut to edit the last input
-        if (isShortcutPressed(event, 'KeyE')) {
+        // attach 'O' to shortcut to open a new chat
+        if (isShortcutPressed(event, 'KeyO')) {
             event.preventDefault();  // Prevent any default behavior associated with this key combination
-            clickLastButtonWithLabel('edit');
+            clickLastButtonWithLabel('new chat');
         }
     });
 
@@ -77,7 +77,7 @@ function addShortcutsToButtons() {
         // attach 'U' to shortcut to upload files
         if (isShortcutPressed(event, 'KeyU')) {
             event.preventDefault();  // Prevent any default behavior associated with this key combination
-            clickLastButtonWithLabel('attach files');
+            clickLastButtonWithLabel('Upload files');
         }
     });
 

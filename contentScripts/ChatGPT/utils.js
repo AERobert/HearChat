@@ -159,7 +159,7 @@ function labelButtonsWithIcons(button_data) {
         const matchingIcon = getMatchingLabel(svg, button_data);
         if(matchingIcon) {
             const label = matchingIcon.label;
-            const hcid = matchingIcon?.hcid;
+            const hcid = getHcidFromIcon(matchingIcon);
             if (label && button.getAttribute('aria-label') !== label) {
                 button.setAttribute('aria-label', label);
             }
@@ -169,6 +169,15 @@ function labelButtonsWithIcons(button_data) {
         }
         }
     });
+}
+
+function getHcidFromIcon(iconObj) {
+    if ('hcid' in iconObj) {
+        return iconObj.hcid;
+    }
+    else {
+        return iconObj.label;
+    }
 }
 
 function getMatchingLabel(svg, button_data) {
@@ -198,22 +207,30 @@ function getMatchingLabel(svg, button_data) {
 
 // functions to interact with the labeled buttons
 function getButtonByLabel(label, index) {
-  // Construct the selector based on the provided label
-  const selector = `button[aria-label="${label}"]`;
+  // Construct the selectors based on the provided label
+  const ariaLabelSelector = `button[aria-label="${label}"]`;
+  const textContentSelector = `button`;
   
-  // Find all buttons with the specified aria-label
-  const buttons = Array.from(document.querySelectorAll(selector));
+  // Find all buttons with the specified aria-label or matching text content
+  const buttons = Array.from(document.querySelectorAll(ariaLabelSelector))
+    .concat(
+      Array.from(document.querySelectorAll(textContentSelector))
+        .filter(button => button.textContent.trim() === label)
+    );
   
-  // If no index is provided, return all found buttons as an array
+  // Remove duplicates (in case a button matches both criteria)
+  const uniqueButtons = Array.from(new Set(buttons));
+  
+  // If no index is provided, return all found unique buttons as an array
   if (index === undefined) {
-    return buttons;
+    return uniqueButtons;
   }
   
   // Normalize the index
-  const normalizedIndex = index < 0 ? buttons.length + index : index;
+  const normalizedIndex = index < 0 ? uniqueButtons.length + index : index;
   
   // Return the button at the specified index, or null if not found
-  return buttons[normalizedIndex] || null;
+  return uniqueButtons[normalizedIndex] || null;
 }
 
 function clickLastButtonWithLabel(label) {
@@ -476,3 +493,4 @@ async function toggleEnterSettingOnPrompt() {
     togglePromptEnterListener(!enterSettingValue);
     announceMessage(`Enter and shift-enter swapped: ${!enterSettingValue ? 'use shift-enter to submit messages and enter to make a newline' : 'use enter to submit messages and shift-enter to make newlines'}.`);
 }
+
