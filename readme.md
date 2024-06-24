@@ -1,6 +1,8 @@
 # HearChat: Accessible and Enhanced ChatGPT
 
-A Chrome extension to make ChatGPT more accessible and friendly for screen reader users.
+A Chrome extension to make AI chatbots more accessible and friendly for screen reader users.
+
+Full support for ChatGPT and parshall support for Claude.ai.
 
 ### Features
 
@@ -26,11 +28,12 @@ A Chrome extension to make ChatGPT more accessible and friendly for screen reade
 
 ### To do
 
-1. Add more options for sound effects, and ability for users to upload their own.
-2. Try to improve the accessibility of the GPT Store's search feature.
-3. A few buttons and popups still don't have labels.
-4. Add ability to speak each response and announcement using the Web Speech API (which would allow much more control compared to OpenAI's synthesizer).
-5. Port the extension to other browsers, like Firefox and Safari.
+1. Update all features to work with Claude.ai, and to other chatbots that may be supported in the future.
+2. Add more options for sound effects, and ability for users to upload their own.
+3. Add ability to speak each response and announcement using the Web Speech API (which would allow much more control compared to OpenAI's synthesizer).
+4. Port the extension to other browsers, like Firefox and Safari.
+5. Continue fixing labels.
+6. The Juce update to ChatGPT broke the headingifying feature, and I still need to fix that.
 
 ### Installation
 Install the extension from the Chrome Web Store! [https://chromewebstore.google.com/detail/hearchat-accessible-and-e/jpgbcgnbpcplkbnihjmohdodnpdldacb](https://chromewebstore.google.com/detail/hearchat-accessible-and-e/jpgbcgnbpcplkbnihjmohdodnpdldacb)
@@ -52,9 +55,11 @@ Once installed, the extension will automatically run when visiting [chat.openai.
 
 The extension's options page includes some settings to customize the extension's notifications and heading level adding feature. This extension automatically adds a button to open these options at the bottom of every ChatGPT page.
 
+# Legal Disclaimer for Multi-Chatbot Chrome Extension
+
 ### Disclaimer and Limitations
 
-**Independence:** The developers of this extension are independent developers and are not affiliated, associated, authorized, endorsed by, or in any way officially connected with ChatGPT, OpenAI, or any of their subsidiaries or affiliates. This extension is not an official ChatGPT or OpenAI product, and no rights to their intellectual property, including trademarks, are claimed or implied.
+**Independence and Non-Affiliation:** The developers of this extension are independent and are not affiliated, associated, authorized, endorsed by, or in any way officially connected with any chatbot providers, including but not limited to OpenAI (ChatGPT), Anthropic (Claude), or any of their subsidiaries or affiliates. This extension is not an official product of any chatbot provider, and no rights to their intellectual property, including trademarks, are claimed or implied.
 
 **Beta Version:** This extension is in beta testing. It is still under development and may have bugs or stability issues. The extension is provided on an "as is" and "as available" basis, and you use it at your own risk.
 
@@ -68,7 +73,9 @@ The extension's options page includes some settings to customize the extension's
 
 **Modification and Termination:** The developers reserve the right, at their sole discretion, to modify, suspend, or terminate the extension at any time, for any reason, without prior notice. The developers may also impose limits on certain features and services or restrict access to parts or all of the extension without notice or liability.
 
-**Dependence on External Changes:** The functionality of this extension depends on the current HTML structure of ChatGPT. Changes to ChatGPT's structure by its developers can affect the functionality of this extension, potentially rendering it partially or completely inoperative.
+**Dependence on External Changes:** The functionality of this extension depends on the current HTML structure and APIs of the supported chatbot platforms. Changes to these structures or APIs by their respective developers can affect the functionality of this extension, potentially rendering it partially or completely inoperative.
+
+By using this extension, you acknowledge that you have read, understood, and agree to be bound by this disclaimer.
 
 ### License
 
