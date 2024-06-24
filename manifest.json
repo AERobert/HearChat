@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "HearChat: Accessible and Enhanced ChatGPT",
     "version": "0.6.14",
-    "description": "adds features to make the ChatGPT web app more friendly for screen reader users.",
+    "description": "adds features to make AI web apps more friendly for screen reader users.",
     "permissions": [
         "storage"
     ],
@@ -18,12 +18,25 @@
                 "*://chatgpt.com/*"
             ],
             "js": [
-                "contentScripts/utils.js",
-                "contentScripts/button_data.js",
-                "contentScripts/keyboard.js",
-                "contentScripts/search.js",
-                "contentScripts/observer.js",
-                "contentScripts/main.js"
+                "contentScripts/ChatGPT/utils.js",
+                "contentScripts/ChatGPT/button_data.js",
+                "contentScripts/ChatGPT/keyboard.js",
+                "contentScripts/ChatGPT/search.js",
+                "contentScripts/ChatGPT/observer.js",
+                "contentScripts/ChatGPT/main.js"
+            ]
+        },
+        {
+            "matches": [ 
+                "*://claude.ai/*"
+            ],
+            "js": [
+                "contentScripts/Claude/utils.js",
+                "contentScripts/Claude/button_data.js",
+                "contentScripts/Claude/keyboard.js",
+                "contentScripts/Claude/search.js",
+                "contentScripts/Claude/observer.js",
+                "contentScripts/Claude/main.js"
             ]
         }
     ],
@@ -39,7 +52,8 @@
             ],
             "matches": [ 
                 "*://chat.openai.com/*",
-                "*://chatgpt.com/*"
+                "*://chatgpt.com/*",
+                "*://claude.ai/*"
             ]
         }
     
