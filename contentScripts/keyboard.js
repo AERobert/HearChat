@@ -103,10 +103,10 @@ function handleEnterOnPrompt(event) {
     let justEnterOrShiftEnter = !(event.altKey || event.metaKey || event.ctrlKey); // boolean checking if the current keys do not have any modifiers pressed
 
     if (justEnterOrShiftEnter && event.shiftKey && event.code === 'Enter') {
-        const sendButton = document.querySelector('button[data-testid="send-button"]');
+        const sendButton = document.querySelector('button[data-testid="send-button"]') || document.querySelector('button[data-hcid="sendStopMessage"]');
         event.preventDefault();
         // browserSpeakString('shift-enter pressed to send');
-        sendButton.click();
+        sendButton && sendButton.click();
     }
     else if (justEnterOrShiftEnter && event.key === 'Enter') {
         event.stopPropagation();

@@ -21,6 +21,7 @@
                 "contentScripts/utils.js",
                 "contentScripts/button_data.js",
                 "contentScripts/keyboard.js",
+                "contentScripts/search.js",
                 "contentScripts/observer.js",
                 "contentScripts/main.js"
             ]

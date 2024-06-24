@@ -60,7 +60,7 @@ function getNameDiv(div) {
     return div.querySelector('div.font-semibold.select-none') || null;
 }
 
-function getAssistantNameDivs() {
+function oldGetAssistantNameDivs() {
     let conversationDivs = document.querySelectorAll('div[data-testid^="conversation-turn-"]');
     
     let assistantDivs = Array.from(conversationDivs).filter(div => isAssistantTurnDiv(div) === 1);
@@ -73,10 +73,31 @@ function getAssistantNameDivs() {
     return assistantNameDivs;
 }
 
+function juceGetAssistantNameDivs() {
+  const elements = document.querySelectorAll('[role="img"],[data-assistant-name="true"]');
+  const removedRoleElements = [];
+
+  elements.forEach(element => {
+    const textElement = element.querySelector('text');
+    if (textElement) {
+      element.removeAttribute('role');
+        element.setAttribute('data-assistant-name', 'true');
+      removedRoleElements.push(element);
+    }
+  });
+
+  return removedRoleElements;
+}
+
 function headingifyDiv(divNode, headingLevel) {
     // Validate headingLevel is within the allowable range, including 0 for removal
     if (headingLevel < 0 || headingLevel > 6) {
         console.error("Invalid heading level. Please choose a value between 0 and 6.");
+        return null;
+    }
+
+    // return early if the divNode is not vallid
+    if (!divNode) {
         return null;
     }
 
@@ -114,7 +135,7 @@ function headingifyDiv(divNode, headingLevel) {
 }
 
 function headingifyAllAssistantNameDivs(headingLevel) {
-    let nameDivs = getAssistantNameDivs();
+    let nameDivs = /* juceGetAssistantNameDivs() || */ oldGetAssistantNameDivs();
     nameDivs.forEach(div => {
         headingifyDiv(div, headingLevel);
     });
@@ -273,7 +294,7 @@ function isAudioPlaying(audio) {
 
 function setOpenaiSpeechRate(desiredSpeed) {
   const openaiAudioElem = document.querySelector('audio');
-  if (isAudioPlaying(openaiAudioElem) && openaiAudioElem.playbackRate !== desiredSpeed) {
+  if (openaiAudioElem && isAudioPlaying(openaiAudioElem) && openaiAudioElem.playbackRate !== desiredSpeed) {
     openaiAudioElem.playbackRate = parseFloat(desiredSpeed);
   }
 }
