@@ -69,7 +69,7 @@ function addShortcutsToButtons() {
         // attach 'O' to shortcut to open a new chat
         if (isShortcutPressed(event, 'KeyO')) {
             event.preventDefault();  // Prevent any default behavior associated with this key combination
-            clickLastButtonWithLabel('new chat');
+            startNewChatWithButton();
         }
     });
 

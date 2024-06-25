@@ -1,10 +1,21 @@
 /*
     * utils.js
-    edited on 2024-04-24
+    edited on 2024-06-25
     * Robert Eggleston
     * contains misc functions to be used lader in the extension
     * first content script run
 */
+
+// where function
+
+function whereClaude() {
+    if(location.href.includes('chats/')) {
+        return 'chatting';
+    }
+    else if(location.href.endsWith('chats')) {
+        return 'frontPage';
+    }
+}
 
 // set up basic announcement system
 
@@ -225,6 +236,15 @@ function clickLastButtonWithLabel(label) {
     button = getButtonByLabel(label, -1);
     if(button) {
         button.click();
+    }
+}
+
+function startNewChatWithButton() {
+    if(whereClaude() === "frontPage") {
+        clickLastButtonWithLabel('Start Chat');
+    }
+    else {
+        clickLastButtonWithLabel('new chat');
     }
 }
 
