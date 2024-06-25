@@ -198,24 +198,29 @@ function getMatchingLabel(svg, button_data) {
 
 // functions to interact with the labeled buttons
 function getButtonByLabel(label, index) {
-  // Construct the selector based on the provided label
-  const selector = `button[aria-label="${label}"]`;
+  // Find all buttons
+  const allButtons = Array.from(document.querySelectorAll('button'));
   
-  // Find all buttons with the specified aria-label
-  const buttons = Array.from(document.querySelectorAll(selector));
+  // Filter buttons based on aria-label or trimmed textContent
+  const matchingButtons = allButtons.filter(button => {
+    const ariaLabel = button.getAttribute('aria-label');
+    const trimmedText = button.textContent.trim();
+    return ariaLabel === label || trimmedText === label;
+  });
   
   // If no index is provided, return all found buttons as an array
   if (index === undefined) {
-    return buttons;
+    return matchingButtons;
   }
   
-  // Normalize the index
-  const normalizedIndex = index < 0 ? buttons.length + index : index;
+  // Normalize the index to handle negative indices
+  const normalizedIndex = index < 0 ? matchingButtons.length + index : index;
   
   // Return the button at the specified index, or null if not found
-  return buttons[normalizedIndex] || null;
+  return normalizedIndex >= 0 && normalizedIndex < matchingButtons.length
+    ? matchingButtons[normalizedIndex]
+    : null;
 }
-
 function clickLastButtonWithLabel(label) {
     button = getButtonByLabel(label, -1);
     if(button) {
