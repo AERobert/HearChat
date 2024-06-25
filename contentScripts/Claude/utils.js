@@ -269,6 +269,60 @@ function badResponseShortcut() {
     setTimeout(() => [...document.querySelectorAll('button')].find(btn => btn.textContent.includes('More...')).click(), 250);
 }
 
+// distinguishing copy code and response buttons
+
+
+function isCopyCodeButton(button) {
+  // Get the parent of the parent (two levels up)
+  let grandparent = button.parentElement.parentElement;
+  
+  // Check if there's a next sibling
+  if (grandparent.nextElementSibling) {
+    let nextSibling = grandparent.nextElementSibling;
+    
+    // Check if the next sibling has a first child
+    if (nextSibling.firstElementChild) {
+      let firstChild = nextSibling.firstElementChild;
+      
+      // Check if the first child is a div
+      if (firstChild.tagName.toLowerCase() === 'div') {
+        // Check if the first child has a class that contains "code-block"
+        return firstChild.className.includes('code-block');
+      }
+    }
+  }
+  
+  return false;
+}
+
+function getDistinguishedCopyButtons(matchCodeBlock) {
+  // Get all possible Copy buttons on the page
+  const allButtons = getButtonByLabel('Copy');
+  
+  // Filter the buttons based on the matchCodeBlock condition
+  const filteredButtons = Array.from(allButtons).filter(button => {
+    const hasCodeBlockAncestor = isCopyCodeButton(button);
+    return matchCodeBlock ? hasCodeBlockAncestor : !hasCodeBlockAncestor;
+  });
+  
+  return filteredButtons;
+}
+
+function labelCopyCodeButtons() {
+    const copyCodeButtons = getDistinguishedCopyButtons(true);
+    const copyResponseButtons = getDistinguishedCopyButtons(false);
+
+    copyCodeButtons.forEach((button) => {
+        button.setAttribute('aria-label', 'Copy Code');
+    });
+
+    copyResponseButtons.forEach((button) => {
+        button.setAttribute('aria-label', 'Copy Response');
+    });
+}
+
+setTimeout(() => console.log(getDistinguishedCopyButtons(true)), 3000);
+
 // speech
 
 // browser speech (added for debugging for now)

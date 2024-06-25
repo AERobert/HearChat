@@ -55,6 +55,9 @@ function hearChatGeneralAccesibilityCheck(settings) {
     // fix checkbox buttons
     updateCheckboxButtons();
 
+    // distinguish copy code and copy response buttons with labels (Claude specific)
+    labelCopyCodeButtons();
+
     // headingify all assistant names (for old or shared chats)
     headingifyAllAssistantNameDivs(settings.desiredHeadingLevel);
     // console.log("should have just headingifyed some headings.");
