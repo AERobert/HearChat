@@ -6,6 +6,32 @@
     * first content script run
 */
 
+// misc
+
+function getAriaDescription(element) {
+    // Check if the element has the 'aria-describedby' attribute
+    const describedBy = element.getAttribute('aria-describedby');
+    
+    if (!describedBy) {
+        // Return null if 'aria-describedby' attribute is missing
+        // console.log('No aria-describedby attribute found.');
+        return null;
+    }
+    
+    // Find the element that is described by the id
+    const descriptionElement = document.getElementById(describedBy);
+    
+    if (descriptionElement) {
+        // Return the text content of the description element
+        // console.log('Description found:', descriptionElement.textContent);
+        return descriptionElement.textContent;
+    } else {
+        // Return null if the description element does not exist
+        // console.log('No element found with the ID provided by aria-describedby.');
+        return null;
+    }
+}
+
 // where function
 
 function whereClaude() {
@@ -216,7 +242,8 @@ function getButtonByLabel(label, index) {
   const matchingButtons = allButtons.filter(button => {
     const ariaLabel = button.getAttribute('aria-label');
     const trimmedText = button.textContent.trim();
-    return ariaLabel === label || trimmedText === label;
+    const ariaDescription = getAriaDescription(button);
+    return [trimmedText, ariaLabel, ariaDescription].includes(label);
   });
   
   // If no index is provided, return all found buttons as an array
