@@ -8,6 +8,7 @@
 
 // misc
 
+/*
 function getAriaDescription(element) {
     // Check if the element has the 'aria-describedby' attribute
     const describedBy = element.getAttribute('aria-describedby');
@@ -30,6 +31,44 @@ function getAriaDescription(element) {
         // console.log('No element found with the ID provided by aria-describedby.');
         return null;
     }
+}
+*/
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function clickLinkWithHref (href) {
+  // Get the full URL
+  const fullUrl = new URL(href, window.location.origin).href;
+
+  // Check if a link with the matching href exists
+  let link = document.querySelector(`a[href="${href}"]`);
+  let createdNewLink = false;
+
+  /* if (!link) {
+    // If no matching link exists, create a new one
+    link = document.createElement('a');
+    link.href = href;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    createdNewLink = true;
+  } */
+
+  // Click the link
+  link.click();
+
+  // Wait for the page to navigate to the new URL
+  await new Promise((resolve) => {
+    const checkUrl = setInterval(() => {
+      if (window.location.href === fullUrl) {
+        clearInterval(checkUrl);
+        resolve();
+      }
+    }, 100);
+  });
+
+  // the link if added should probably be removed, but it was causing errors when I tried so...
 }
 
 // where function
@@ -192,12 +231,12 @@ function labelButtonsWithIcons(button_data) {
     const svg = button.querySelector('svg');
     const allTextInsideButton = button.textContent.trim();
 
-    if (svg && allTextInsideButton === '') {
+    if (svg) {
         const matchingIcon = getMatchingLabel(svg, button_data);
         if(matchingIcon) {
             const label = matchingIcon.label;
             const hcid = matchingIcon?.hcid;
-            if (label && button.getAttribute('aria-label') !== label) {
+            if (label && button.getAttribute('aria-label') !== label && allTextInsideButton === '') {
                 button.setAttribute('aria-label', label);
             }
             if (hcid && button.getAttribute('data-hcid') != hcid) {
@@ -242,8 +281,8 @@ function getButtonByLabel(label, index) {
   const matchingButtons = allButtons.filter(button => {
     const ariaLabel = button.getAttribute('aria-label');
     const trimmedText = button.textContent.trim();
-    const ariaDescription = getAriaDescription(button);
-    return [trimmedText, ariaLabel, ariaDescription].includes(label);
+    const hcid = button.getAttribute('data-hcid');
+    return [trimmedText, ariaLabel, hcid].includes( label);
   });
   
   // If no index is provided, return all found buttons as an array
@@ -264,6 +303,7 @@ function clickLastButtonWithLabel(label) {
     if(button) {
         button.click();
     }
+    return button
 }
 
 function startNewChatWithButton() {
@@ -289,6 +329,21 @@ function speakLastResponse(shouldSpeak) {
     if(shouldSpeak) {
         setTimeout(() => clickLastButtonWithLabel('speak', -1), 500);
     }
+}
+
+async function clickUseProjectButton() {
+      if (!location.href.endsWith('/new')) {
+        await clickLinkWithHref('/new')
+        await delay(100);
+      }
+    const useProjectButton = (getButtonByLabel('Use a project', -1) || getButtonByLabel('Change project', -1));
+      useProjectButton.click(); // presses `use a project` if no project is selected, and `change project` if one is already
+    }
+
+async function goToCreateProjectPage() {
+    await clickLinkWithHref('/projects');
+    while (!document.querySelector('a[href="/projects/create"]')) await delay(100);
+    await clickLinkWithHref('/projects/create');
 }
 
 function badResponseShortcut() {

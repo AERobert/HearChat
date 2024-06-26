@@ -26,17 +26,9 @@ const KEY_SEQUENCES = {
     'KeyR': () => clickLastButtonWithLabel('refresh')
   },
   'KeyP': {
-    'KeyC': () => console.log('Project: Copy'),
+    'KeyC': goToCreateProjectPage,
     'KeyP': () => document.querySelector('a[href="/projects"]').click(),
-    'KeyU': () => {
-      if (!location.href.endsWith('/new')) {
-        document.querySelector('a[href="/new"]').click();
-        setTimeout(() => clickLastButtonWithLabel('Use a project'), 750);
-      }
-      else {
-        clickLastButtonWithLabel('Use a project');
-      }
-    }
+    'KeyU': clickUseProjectButton
   }
 };
 
@@ -93,7 +85,7 @@ function handleKeyDown(event) {
         SINGLE_KEY_SHORTCUTS[keySequence[0]]();
       }
       clearKeySequence();
-    }, 300); // Adjust this delay as needed
+    }, 1000); // Adjust this delay as needed
   } else if (keySequence.length === 2) {
     clearTimeout(sequenceTimer);
     const [firstKey, secondKey] = keySequence;
