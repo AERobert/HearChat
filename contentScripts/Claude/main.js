@@ -14,9 +14,6 @@ async function getSettingsBeginAndObserve() {
 // launch first demon observer and checker
 getSettingsBeginAndObserve();
 
-// add the extra keyboard shortcuts
-        addShortcutsToButtons();
-
 // Listener to react to storage changes and update settings without needing to reload
 chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (var key in changes) {

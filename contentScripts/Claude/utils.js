@@ -321,8 +321,6 @@ function labelCopyCodeButtons() {
     });
 }
 
-setTimeout(() => console.log(getDistinguishedCopyButtons(true)), 3000);
-
 // speech
 
 // browser speech (added for debugging for now)

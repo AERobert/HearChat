@@ -6,141 +6,151 @@
     * third content script run
 */
 
-// function to easily check for cross platform shortcuts
+// Constants
+const MAX_SEQUENCE_LENGTH = 2;
+const ALLOWED_KEYCODES = [
+  // Alphabet keys
+  ...Array.from({length: 26}, (_, i) => `Key${String.fromCharCode(65 + i)}`),
+  // Digit keys
+  ...Array.from({length: 10}, (_, i) => `Digit${i}`),
+  // Special characters
+  "Semicolon", "Comma", "Period", "Slash", "Backslash", "BracketLeft",
+  "BracketRight", "Quote", "Backquote", "Minus", "Equal"
+];
 
-function isShortcutPressed(event, keycode) {
-    // Determine the operating system
-    const os = navigator.platform.toUpperCase();
-
-    // Define system-specific flags for key combinations
-    let isWindows = os.includes('WIN');
-    let isMac = os.includes('MAC');
-    let isLinux = os.includes('LINUX');
-
-    // Define the modifier keys based on the operating system
-    let isControlPressed = event.ctrlKey;
-    let isAltPressed = event.altKey;
-    let isShiftPressed = event.shiftKey;
-    let isMetaPressed = event.metaKey; // Command key on Mac
-
-    // Check if the correct key is pressed along with the modifier keys
-    if (keycode.toUpperCase() === event.code.toUpperCase()) {
-        if (isWindows) {
-            return isControlPressed && isAltPressed && isShiftPressed;
-        } else if (isMac || isLinux) { // macOS and other systems
-            return isMetaPressed && isAltPressed && isShiftPressed;
-        } else { // Default case for other systems, similar to Mac
-            return isMetaPressed && isAltPressed && isShiftPressed;
-        }
+// Key sequence configuration
+const KEY_SEQUENCES = {
+  'KeyA': {
+    'KeyC': () => clickLastButtonWithLabel('copy contents'),
+    'KeyD': () => clickLastButtonWithLabel('download to file'),
+    'KeyR': () => clickLastButtonWithLabel('refresh')
+  },
+  'KeyP': {
+    'KeyC': () => console.log('Project: Copy'),
+    'KeyP': () => document.querySelector('a[href="/projects"]').click(),
+    'KeyU': () => {
+      if (!location.href.endsWith('/new')) {
+        document.querySelector('a[href="/new"]').click();
+        setTimeout(() => clickLastButtonWithLabel('Use a project'), 750);
+      }
+      else {
+        clickLastButtonWithLabel('Use a project');
+      }
     }
+  }
+};
 
-    return false;
+// Single key shortcuts
+const SINGLE_KEY_SHORTCUTS = {
+  'KeyS': toggleLastResponseSpeech,
+  'KeyR': () => clickLastButtonWithLabel('Retry'),
+  'KeyE': () => clickLastButtonWithLabel('Edit'),
+  'KeyC': () => clickLastButtonWithLabel('Copy Response'),
+  'Semicolon': () => clickLastButtonWithLabel('Copy Code'),
+  'KeyB': badResponseShortcut,
+  'KeyO': () => document.querySelector('a[href="/new"]').click(),
+  'KeyU': () => document.querySelector('input[aria-label="Upload files"]').click(),
+  'Enter': toggleEnterSettingOnPrompt,
+  'KeyH': openHearChatOptionsPage
+};
+
+// State
+let keySequence = [];
+let sequenceTimer = null;
+
+// Utility functions
+function clearKeySequence() {
+  keySequence = [];
+  if (sequenceTimer) {
+    clearTimeout(sequenceTimer);
+    sequenceTimer = null;
+  }
 }
 
+function isShortcutPressed(event) {
+  const os = navigator.platform.toUpperCase();
+  const isWindows = os.includes('WIN');
+  const isMac = os.includes('MAC');
+  const isLinux = os.includes('LINUX');
 
-// function that adds keyboard shortcuts
-
-function addShortcutsToButtons() {
-    document.addEventListener('keydown', function(event) {
-        // attach speaking shortcut to 'S'
-        if (isShortcutPressed(event, 'KeyS')) {
-            event.preventDefault();  // Prevent any default behavior associated with this key combination
-            toggleLastResponseSpeech();
-        }
-    });
-    
-    document.addEventListener('keydown', function(event) {
-        // attach r to regenerate shortcut.
-        if (isShortcutPressed(event, 'KeyR')) {
-            event.preventDefault();  // Prevent any default behavior associated with this key combination
-            clickLastButtonWithLabel('Retry');
-        }
-    });
-    
-    document.addEventListener('keydown', function(event) {
-        // attach 'B' to bad response shortcut
-        if (isShortcutPressed(event, 'KeyB')) {
-            event.preventDefault();  // Prevent any default behavior associated with this key combination
-            badResponseShortcut();
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        // attach 'O' to shortcut to open a new chat
-        if (isShortcutPressed(event, 'KeyO')) {
-            event.preventDefault();  // Prevent any default behavior associated with this key combination
-            startNewChatWithButton();
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        // attach 'U' to shortcut to upload files
-        if (isShortcutPressed(event, 'KeyU')) {
-            event.preventDefault();  // Prevent any default behavior associated with this key combination
-            clickLastButtonWithLabel('Upload files');
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        // attach 'Enter' plus the assigned key combination (based on the system) to swap the enter and shift-enter functionality
-        if (isShortcutPressed(event, 'Enter')) {
-            event.preventDefault();  // Prevent any default behavior associated with this key combination
-            toggleEnterSettingOnPrompt();
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        // attach 'H' to shortcut that opens the HearChat options page
-        if (isShortcutPressed(event, 'KeyH')) {
-            event.preventDefault();  // Prevent any default behavior associated with this key combination
-            openHearChatOptionsPage();
-        }
-    });
+  return (isWindows && event.ctrlKey && event.altKey && event.shiftKey) ||
+         ((isMac || isLinux) && event.metaKey && event.altKey && event.shiftKey);
 }
 
-// easily invert enter and shift-enter on the prompt textarea
+// Event handlers
+function handleKeyDown(event) {
+  if (!isShortcutPressed(event) || !ALLOWED_KEYCODES.includes(event.code)) {
+    clearKeySequence();
+    return;
+  }
+
+  event.preventDefault();
+  keySequence.push(event.code);
+
+  if (keySequence.length === 1) {
+    sequenceTimer = setTimeout(() => {
+      if (keySequence.length === 1 && SINGLE_KEY_SHORTCUTS[keySequence[0]]) {
+        SINGLE_KEY_SHORTCUTS[keySequence[0]]();
+      }
+      clearKeySequence();
+    }, 300); // Adjust this delay as needed
+  } else if (keySequence.length === 2) {
+    clearTimeout(sequenceTimer);
+    const [firstKey, secondKey] = keySequence;
+    if (KEY_SEQUENCES[firstKey] && KEY_SEQUENCES[firstKey][secondKey]) {
+      KEY_SEQUENCES[firstKey][secondKey]();
+    }
+    clearKeySequence();
+  }
+}
+
 function handleEnterOnPrompt(event) {
-    let justEnterOrShiftEnter = !(event.altKey || event.metaKey || event.ctrlKey); // boolean checking if the current keys do not have any modifiers pressed
+  const justEnterOrShiftEnter = !(event.altKey || event.metaKey || event.ctrlKey);
 
-    if (justEnterOrShiftEnter && event.shiftKey && event.code === 'Enter') {
-        const sendButton = document.querySelector('button[data-testid="send-button"]') || document.querySelector('button[data-hcid="sendStopMessage"]');
-        event.preventDefault();
-        // browserSpeakString('shift-enter pressed to send');
-        sendButton && sendButton.click();
-    }
-    else if (justEnterOrShiftEnter && event.key === 'Enter') {
-        event.stopPropagation();
-        // browserSpeakString('enter pressed for newline');
-    }
+  if (justEnterOrShiftEnter && event.shiftKey && event.code === 'Enter') {
+    event.preventDefault();
+    const sendButton = document.querySelector('button[data-testid="send-button"]') || 
+                       document.querySelector('button[data-hcid="sendStopMessage"]');
+    sendButton?.click();
+  } else if (justEnterOrShiftEnter && event.key === 'Enter') {
+    event.stopPropagation();
+  }
+}
+
+// Setup functions
+function setupKeyboardListeners() {
+  document.addEventListener('keydown', handleKeyDown);
 }
 
 function togglePromptEnterListener(enable) {
-    const promptTextarea = document.getElementById('prompt-textarea');
-    // Check the data attribute instead of hasEventListener
-    const dataAttribute = 'data-event-keydown-shiftEnterSending';
-    const listenerOnTextarea = (promptTextarea && promptTextarea.getAttribute(dataAttribute) === 'true');
+  const promptTextarea = document.getElementById('prompt-textarea');
+  const dataAttribute = 'data-event-keydown-shiftEnterSending';
 
-    if (enable && !listenerOnTextarea) {
-        promptTextarea.addEventListener('keydown', handleEnterOnPrompt);
-        promptTextarea.setAttribute(dataAttribute, 'true'); // Set the attribute when adding the listener
-    } else if (!enable && listenerOnTextarea) {
-        promptTextarea.removeEventListener('keydown', handleEnterOnPrompt);
-        promptTextarea.setAttribute(dataAttribute, 'false'); // Reset the attribute when removing the listener
-    }
+  if (enable && promptTextarea && promptTextarea?.getAttribute(dataAttribute) !== 'true') {
+    promptTextarea.addEventListener('keydown', handleEnterOnPrompt);
+    promptTextarea.setAttribute(dataAttribute, 'true');
+  } else if (!enable && promptTextarea && promptTextarea?.getAttribute(dataAttribute) === 'true') {
+    promptTextarea.removeEventListener('keydown', handleEnterOnPrompt);
+    promptTextarea.setAttribute(dataAttribute, 'false');
+  }
 }
 
 function stopModEnterOnPromptPropagating() {
-    const promptTextarea = document.getElementById('prompt-textarea');
-    const dataAttribute = 'data-event-keydown-stopEnterShortcutBubbling';
-    const promptTextareaNotStoppingPropagation = (promptTextarea && promptTextarea.getAttribute(dataAttribute) !== 'true');
+  const promptTextarea = document.getElementById('prompt-textarea');
+  const dataAttribute = 'data-event-keydown-stopEnterShortcutBubbling';
 
-    if (promptTextarea && promptTextareaNotStoppingPropagation) {
-        promptTextarea.setAttribute(dataAttribute, 'true'); // Set the attribute when adding the listener
-        promptTextarea.addEventListener('keydown', function(event) {
-            if (isShortcutPressed(event, 'Enter')) {
-                event.stopPropagation();
-                toggleEnterSettingOnPrompt();
-            }
-        });
-    }
+  if (promptTextarea && promptTextarea.getAttribute(dataAttribute) !== 'true') {
+    promptTextarea.setAttribute(dataAttribute, 'true');
+    promptTextarea.addEventListener('keydown', (event) => {
+      if (isShortcutPressed(event) && event.code === 'Enter') {
+        event.stopPropagation();
+        toggleEnterSettingOnPrompt();
+      }
+    });
+  }
 }
+
+// Initialize
+setupKeyboardListeners();
+togglePromptEnterListener(true);
+stopModEnterOnPromptPropagating();
