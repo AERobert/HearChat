@@ -57,6 +57,7 @@ function hearChatGeneralAccesibilityCheck(settings) {
 
     // headingify all assistant names (for old or shared chats)
     headingifyAllAssistantNameDivs(settings.desiredHeadingLevel);
+    headingifyChat(settings.desiredHeadingLevel);
     // console.log("should have just headingifyed some headings.");
 
     // show buttons for each response, if the user wants

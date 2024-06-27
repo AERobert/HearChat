@@ -47,7 +47,98 @@ function playSound(filename) {
     console.log(`Played '${filename}'`);
 }
 
-// headingifying the assistant name divs
+// headingifying for Juce interface
+
+function createVisuallyHiddenElement(tag, text) {
+  // Create the element
+  const element = document.createElement(tag);
+  
+  // Set the text content
+  element.textContent = text;
+  
+  // Apply the visually-hidden styles
+  element.style.clip = 'rect(0 0 0 0)';
+  element.style.clipPath = 'inset(50%)';
+  element.style.height = '1px';
+  element.style.overflow = 'hidden';
+  element.style.position = 'absolute';
+  element.style.whiteSpace = 'nowrap';
+  element.style.width = '1px';
+  
+  return element;
+}
+
+function hasResultThinkingDescendant(element) {
+  return element.querySelector('.result-thinking') !== null;
+}
+
+function getCurrentGptFromUrl(urlString=null) {
+  if (!urlString) urlString = location.href;
+  // Parse the URL
+  const url = new URL(urlString);
+  
+  // Get the pathname and split it into segments
+  const pathSegments = url.pathname.split('/');
+  
+  // Find the segment that starts with 'g-'
+  const chatbotSegment = pathSegments.find(segment => segment.startsWith('g-'));
+  
+  if (!chatbotSegment) {
+    return "ChatGPT";
+  }
+  
+  // Remove the 'g-' prefix and any alphanumeric characters immediately following it
+  const nameWithoutPrefix = chatbotSegment.replace(/^g-[a-zA-Z0-9]+-/, '');
+  
+  // Split the remaining string by hyphens
+  const words = nameWithoutPrefix.split('-');
+  
+  // Capitalize the first letter of each word and join with spaces
+  return words.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+               .join(' ');
+}
+
+function headingifyChat(headingLevel) {
+  // Find all divs with the data-message-author-role "assistant"
+  const messageDivs = document.querySelectorAll('div[data-message-author-role="assistant"]');
+    const currentGpt = getCurrentGptFromUrl();
+    const newHeadingTag = 'H' +headingLevel;
+
+  // Validate the heading level
+  if (headingLevel && (headingLevel < 1 || headingLevel > 6 || !Number.isInteger(headingLevel))) {
+    console.error('Invalid heading level. Please use a number between 1 and 6.');
+    return;
+  }
+
+  messageDivs.forEach(div => {
+    const previousElement = div.previousElementSibling;
+
+        // return if the previous element is already at the desired heading level
+        if (previousElement && previousElement.tagName === newHeadingTag) {
+            return;
+        }
+    else if (!headingLevel) {
+        if (previousElement && previousElement.tagName.match(/^H[1-6]$/)) {
+            previousElement.remove();
+        }
+        return;
+    }
+
+          if (hasResultThinkingDescendant(div)) return; // a weird hidden div with the class `result-thinking` was adding extra headings
+
+    // Create new heading element
+    const newHeading = createVisuallyHiddenElement(newHeadingTag, currentGpt);
+
+    // Replace or insert the new heading
+    if (previousElement && previousElement.tagName.match(/^H[1-6]$/)) {
+      previousElement.replaceWith(newHeading);
+    } else {
+      div.parentNode.insertBefore(newHeading, div);
+    }
+  });
+}
+
+// headingifying the assistant name divs (for old interface, but don't want to remove it incase someone is still using that one)
 
 function isAssistantTurnDiv(div) {
     const roleDiv = div.querySelector('div[data-message-author-role]');

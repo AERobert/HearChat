@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "HearChat: Accessible and Enhanced ChatGPT",
-    "version": "0.7.2",
+    "version": "0.7.3",
     "description": "adds features to make AI web apps more friendly for screen reader users.",
     "permissions": [
         "storage"
