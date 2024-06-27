@@ -123,101 +123,63 @@ function playSound(filename) {
     console.log(`Played '${filename}'`);
 }
 
-// headingifying the assistant name divs
+// headingifying Claude Style
 
-function isAssistantTurnDiv(div) {
-    const roleDiv = div.querySelector('div[data-message-author-role]');
-    if (!roleDiv) return -1; // No div with the role attribute found.
-    const role = roleDiv.getAttribute('data-message-author-role');
-    return role === 'assistant' ? 1 : role === 'user' ? 0 : -1;
+function createVisuallyHiddenElement(tag, text) {
+  // Create the element
+  const element = document.createElement(tag);
+  
+  // Set the text content
+  element.textContent = text;
+  
+  // Apply the visually-hidden styles
+  element.style.clip = 'rect(0 0 0 0)';
+  element.style.clipPath = 'inset(50%)';
+  element.style.height = '1px';
+  element.style.overflow = 'hidden';
+  element.style.position = 'absolute';
+  element.style.whiteSpace = 'nowrap';
+  element.style.width = '1px';
+  
+  return element;
 }
 
-function getNameDiv(div) {
-    return div.querySelector('div.font-semibold.select-none') || null;
-}
+function headingifyChat(headingLevel) {
+  // Find all divs with the class "font-claude-message"
+  const messageDivs = document.querySelectorAll('div.font-claude-message');
 
-function oldGetAssistantNameDivs() {
-    let conversationDivs = document.querySelectorAll('div[data-testid^="conversation-turn-"]');
-    
-    let assistantDivs = Array.from(conversationDivs).filter(div => isAssistantTurnDiv(div) === 1);
-    
-    let assistantNameDivs = assistantDivs.flatMap(element => {
-        const nameDiv = getNameDiv(element);
-        return nameDiv ? [nameDiv] : [];
-    });
+  // Validate the heading level
+  if (headingLevel && (headingLevel < 1 || headingLevel > 6 || !Number.isInteger(headingLevel))) {
+    console.error('Invalid heading level. Please use a number between 1 and 6.');
+    return;
+  }
 
-    return assistantNameDivs;
-}
+  messageDivs.forEach(div => {
+    const previousElement = div.previousElementSibling;
+        const newHeadingTag = 'H' +headingLevel;
 
-function juceGetAssistantNameDivs() {
-  const elements = document.querySelectorAll('[role="img"],[data-assistant-name="true"]');
-  const removedRoleElements = [];
+        // return if the previous element is already at the desired heading level
+        if (previousElement && previousElement.tagName === newHeadingTag) {
+            return;
+        }
+    else if (!headingLevel) {
+        if (previousElement && previousElement.tagName.match(/^H[1-6]$/)) {
+            previousElement.remove();
+        }
+        return;
+    }
 
-  elements.forEach(element => {
-    const textElement = element.querySelector('text');
-    if (textElement) {
-      element.removeAttribute('role');
-        element.setAttribute('data-assistant-name', 'true');
-      removedRoleElements.push(element);
+    // Create new heading element
+    const newHeading = createVisuallyHiddenElement(newHeadingTag, 'Claude');
+
+    // Replace or insert the new heading
+    if (previousElement && previousElement.tagName.match(/^H[1-6]$/)) {
+      previousElement.replaceWith(newHeading);
+    } else {
+      div.parentNode.insertBefore(newHeading, div);
     }
   });
-
-  return removedRoleElements;
 }
-
-function headingifyDiv(divNode, headingLevel) {
-    // Validate headingLevel is within the allowable range, including 0 for removal
-    if (headingLevel < 0 || headingLevel > 6) {
-        console.error("Invalid heading level. Please choose a value between 0 and 6.");
-        return null;
-    }
-
-    // return early if the divNode is not vallid
-    if (!divNode) {
-        return null;
-    }
-
-    // Consolidate query for an existing heading
-    const existingHeading = divNode.querySelector('h1, h2, h3, h4, h5, h6');
-
-    if ((headingLevel === 0) && existingHeading) {
-        // If headingLevel is 0, remove the existing heading if present
-        divNode.removeChild(existingHeading);
-        divNode.textContent = existingHeading.textContent;
-    }
-    else if (existingHeading) {
-        // Replace or retain existing heading based on the requested level
-        if (parseInt(existingHeading.tagName[1], 10) === headingLevel) {
-            // Existing heading matches the requested level, return it
-            return existingHeading;
-        } else {
-            // Replace existing heading with a new one of the specified level
-            const newHeading = document.createElement(`h${headingLevel}`);
-            newHeading.textContent = existingHeading.textContent;
-            divNode.replaceChild(newHeading, existingHeading);
-            return newHeading;
-        }
-    } else if (headingLevel >= 1 && headingLevel <= 6) {
-        // Add a new heading if there isn't one already
-        const heading = document.createElement(`h${headingLevel}`);
-        heading.textContent = divNode.textContent; // Use div's existing text content for the new heading
-        divNode.textContent = ''; // Clear the div's content before appending the new heading
-        divNode.appendChild(heading);
-        return heading;
-    }
-
-    // Given the logic flow, this return is a safeguard and should theoretically never be reached
-    return null;
-}
-
-function headingifyAllAssistantNameDivs(headingLevel) {
-    let nameDivs = /* juceGetAssistantNameDivs() || */ oldGetAssistantNameDivs();
-    nameDivs.forEach(div => {
-        headingifyDiv(div, headingLevel);
-    });
-}
-
-headingifyAllAssistantNameDivs(4);
 
 // labeling
 

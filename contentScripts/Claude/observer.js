@@ -37,11 +37,11 @@ function didRespondingFinish(node, settings) {
 function checkNewAssistantTurnToHeadingify(node, headingLevel) {
     // Check for adding of a new conversation turn div
     if (node.querySelector('div[data-testid^="conversation-turn-"]')) {
-        setTimeout(() => headingifyAllAssistantNameDivs(headingLevel), INTERVALDEMONDELAY);
+        // setTimeout(() => headingifyChat(headingLevel), INTERVALDEMONDELAY);
         // some update stops the observer from updating the first heading in a new chat, so this just sets up a demon to check continuously
     } else if (node.matches('div[data-testid^="conversation-turn-"]') && (isAssistantTurnDiv(node) === 1)) {
         let assistantNameDiv = getNameDiv(node);
-        headingifyDiv(assistantNameDiv, headingLevel);
+        // headingifyDiv(assistantNameDiv, headingLevel);
     }
 }
 
@@ -59,7 +59,7 @@ function hearChatGeneralAccesibilityCheck(settings) {
     labelCopyCodeButtons();
 
     // headingify all assistant names (for old or shared chats)
-    headingifyAllAssistantNameDivs(settings.desiredHeadingLevel);
+    headingifyChat(settings.desiredHeadingLevel);
     // console.log("should have just headingifyed some headings.");
 
     // show buttons for each response, if the user wants
