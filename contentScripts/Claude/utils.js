@@ -88,7 +88,7 @@ function whereClaude() {
 const accessibilityAnnouncementsDiv = document.createElement('div');
 
 // adds aria attributes to make div useful
-accessibilityAnnouncementsDiv.setAttribute('role', 'alert');
+accessibilityAnnouncementsDiv.setAttribute('role', 'status');
 accessibilityAnnouncementsDiv.id = 'accessibility-announcements';
 
 // needs to be styled to be invisible
@@ -119,8 +119,19 @@ function announceMessage(message) {
 function playSound(filename) {
     let audioPath = chrome.runtime.getURL(`audio/${filename}`);
     let audio = new Audio(audioPath);
-    audio.play();
-    console.log(`Played '${filename}'`);
+    
+    audio.play()
+        .then(() => {
+            // console.log(`Played '${filename}'`);
+        })
+        .catch((error) => {
+            if (error.name === "NotAllowedError") {
+                // console.warn(`Unable to play '${filename}': User interaction required.`);
+                // You might want to add some user-facing notification here
+            } else {
+                console.error(`Error playing '${filename}':`, error);
+            }
+        });
 }
 
 // headingifying Claude Style
@@ -180,6 +191,9 @@ function headingifyChat(headingLevel) {
     }
   });
 }
+
+// message stopping and starting demon hooks
+
 
 // labeling
 
@@ -418,6 +432,17 @@ function setOpenaiSpeechRate(desiredSpeed) {
   if (openaiAudioElem && isAudioPlaying(openaiAudioElem) && openaiAudioElem.playbackRate !== desiredSpeed) {
     openaiAudioElem.playbackRate = parseFloat(desiredSpeed);
   }
+}
+
+// role="status" elements are really annoying
+
+function speakRoleStatusElementsOnce() {
+    const statusElements = document.querySelectorAll('[role="status"]');
+    statusElements.forEach(element => {
+    element.removeAttribute('role');
+  announceMessage(element.textContent);
+  });
+    return statusElements.length; // Returns the number of elements changed
 }
 
 // function to fix the checkbox buttons in the custom instructions screen

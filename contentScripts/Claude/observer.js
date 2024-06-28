@@ -1,129 +1,94 @@
 /*
     * observer.js
-    edited on 2024-04-20
+    edited on 2024-06-28
     * Robert Eggleston
     * defines monitors (in the form of events and observer objects) to the DOM in order to trigger code at specific changes.
     * expects to be run after utils.js and button_data.js
 */
 
-// constants
+// Constants
+const INTERVAL_DEMON_DELAY = 500; // ms between checks for the backup heading demon
 
-const INTERVALDEMONDELAY = 500; // the amount of time (in ms) the backup heading demon will wait between checks.
+// Main functions
+const handleResponseStart = (node, settings) => {
+  console.log('The assistant is now responding.');
+  announceMessage(settings.startingAnnouncement);
+  playSound(settings.startingSound);
+};
 
-// functions to be used in the big observer 
+const handleResponseEnd = (node, settings) => {
+  announceMessage(settings.finishingAnnouncement);
+  playSound(settings.finishingSound);
+  speakLastResponse(settings.finishedSpeakResponse);
+};
 
-function didRespondingStart(node, settings) {
-    if (node.matches('button[aria-label="Stop generating"]') || node.querySelector('button[aria-label="Stop generating"]')) {
-        console.log('The GPT is now responding.');
-        announceMessage(settings.startingAnnouncement);
-        playSound(settings.startingSound);
-        node.setAttribute('data-sending', 'true');
-    }
-}
+const checkNewAssistantTurn = (node, headingLevel) => {
+  const assistantTurnDiv = node.matches('div[data-testid^="conversation-turn-"]') ? node : node.querySelector('div[data-testid^="conversation-turn-"]');
+  if (assistantTurnDiv && isAssistantTurnDiv(assistantTurnDiv)) {
+    const assistantNameDiv = getNameDiv(assistantTurnDiv);
+    headingifyDiv(assistantNameDiv, headingLevel);
+  }
+};
 
-function didRespondingFinish(node, settings) {
-    if (node.querySelector('button[aria-label="Stop generating"]')) {
-        announceMessage(settings.finishingAnnouncement);
-        playSound(settings.finishingSound);
-        speakLastResponse(settings.finishedSpeakResponse);
-    }
-    else if (node.getAttribute('aria-label') === 'send message' && node.getAttribute('data-sending') === 'true') {
-        announceMessage(settings.finishingAnnouncement);
-        playSound(settings.finishingSound);
-        speakLastResponse(settings.finishedSpeakResponse);
-    }
-}
-
-function checkNewAssistantTurnToHeadingify(node, headingLevel) {
-    // Check for adding of a new conversation turn div
-    if (node.querySelector('div[data-testid^="conversation-turn-"]')) {
-        // setTimeout(() => headingifyChat(headingLevel), INTERVALDEMONDELAY);
-        // some update stops the observer from updating the first heading in a new chat, so this just sets up a demon to check continuously
-    } else if (node.matches('div[data-testid^="conversation-turn-"]') && (isAssistantTurnDiv(node) === 1)) {
-        let assistantNameDiv = getNameDiv(node);
-        // headingifyDiv(assistantNameDiv, headingLevel);
-    }
-}
-
-function hearChatGeneralAccesibilityCheck(settings) {
-    // Execute the function to label the buttons
-    labelButtonsWithIcons(unlabeledButtonIcons);
-
-    // execute function to give divs correct roles
-    fixButtonTypedDivs();
-
-    // fix checkbox buttons
-    updateCheckboxButtons();
-
-    // distinguish copy code and copy response buttons with labels (Claude specific)
-    labelCopyCodeButtons();
-
-    // headingify all assistant names (for old or shared chats)
-    headingifyChat(settings.desiredHeadingLevel);
-    // console.log("should have just headingifyed some headings.");
-
-    // show buttons for each response, if the user wants
-    showAllButtons(settings.showAllButtons);
-
-    // set Openai's speech rate to the desired reading speed
-    setOpenaiSpeechRate(settings.openaiSpeechReadingSpeed);
-
-    // reverse enter and shift-enter on prompt textarea (if wanted)
-    togglePromptEnterListener(settings.swapEnterShiftEnterOnPrompt);
-
-    // add listener to block propagation of the enter shift-enter swap shortcut
-    stopModEnterOnPromptPropagating();
-}
-
-function observeAndListen(settings) {// timeout to wait for the DOM to fully load before executing initial code.
-// Todo: figure out how to make this all more elegant.
-
-    // setup demon on timer to constantly check for issues (in case observer misses something)
-    const interval = setInterval(() => hearChatGeneralAccesibilityCheck(settings), INTERVALDEMONDELAY);
-
-// Let's set up a MutationObserver to listen for changes in the DOM
-const observer = new MutationObserver(mutations => {
-  // For simplicity, we'll check for unlabeled buttons and roleless divs on any DOM change.
+const performGeneralAccessibilityChecks = (settings) => {
   labelButtonsWithIcons(unlabeledButtonIcons);
   fixButtonTypedDivs();
+  // updateCheckboxButtons();
+  speakRoleStatusElementsOnce();
+  labelCopyCodeButtons();
+  headingifyChat(settings.desiredHeadingLevel);
+  // showAllButtons(settings.showAllButtons);
+  // setOpenaiSpeechRate(settings.openaiSpeechReadingSpeed);
+  togglePromptEnterListener(settings.swapEnterShiftEnterOnPrompt);
+  stopModEnterOnPromptPropagating();
+};
 
-  // Check for the specific addition or removal of the "Stop generating" button
-  mutations.forEach(mutation => {
-    if (mutation.type === 'childList') {
-      // Check for the addition of nodes
-      mutation.addedNodes.forEach(node => {
-        if (node.nodeType === 1) { // Ensure it's an Element node
-          didRespondingStart(node, settings);
-          checkNewAssistantTurnToHeadingify(node, settings.desiredHeadingLevel);
+const observeAndListen = (settings) => {
+  const interval = setInterval(() => performGeneralAccessibilityChecks(settings), INTERVAL_DEMON_DELAY);
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      if (mutation.type === 'childList') {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            // Check for new message divs
+            const messageDivs = node.querySelectorAll('.font-claude-message');
+            messageDivs.forEach(messageDiv => {
+              const parentDiv = messageDiv.closest('[data-is-streaming]');
+              if (parentDiv) {
+                if (parentDiv.getAttribute('data-is-streaming') === 'false') {
+                  handleResponseEnd(parentDiv, settings);
+                } else if (parentDiv.getAttribute('data-is-streaming') === 'true') {
+                  handleResponseStart(parentDiv, settings);
+                }
+              }
+            });
+
+            // Check for new assistant turns
+            checkNewAssistantTurn(node, settings.desiredHeadingLevel);
+          }
+        });
+      } else if (mutation.type === 'attributes' && mutation.attributeName === 'data-is-streaming') {
+        const targetDiv = mutation.target;
+        if (targetDiv.getAttribute('data-is-streaming') === 'true') {
+          handleResponseStart(targetDiv, settings);
+        } else if (targetDiv.getAttribute('data-is-streaming') === 'false') {
+          handleResponseEnd(targetDiv, settings);
         }
-      });
-
-      // Check for the removal of nodes
-      mutation.removedNodes.forEach(node => {
-        if (node.nodeType === 1) { // Ensure it's an Element node
-          didRespondingFinish(node, settings);
-        }
-      });
-    } else if (mutation.type === 'attributes' && mutation.target.getAttribute('data-hcid') === 'sendStopMessage') {
-      const button = mutation.target;
-      const ariaLabel = button.getAttribute('aria-label');
-
-      if (ariaLabel === 'Stop generating') {
-        // Trigger the start responding code
-        didRespondingStart(button, settings);
-      } else if (ariaLabel === 'send message') {
-        // Trigger the stopped responding code
-        didRespondingFinish(button, settings);
       }
-    }
+    });
+
+    // Perform general accessibility checks after processing mutations
+    performGeneralAccessibilityChecks(settings);
   });
-});
 
-// Start observing the document body for child list changes, subtree modifications, and attribute changes
-observer.observe(document.body, { childList: true, subtree: true, attributeFilter: ['aria-label'] });
+  observer.observe(document.body, { 
+    childList: true, 
+    subtree: true, 
+    attributes: true,
+    attributeFilter: ['data-is-streaming'],
+    characterData: false
+  });
 
-    return {
-        "interval": interval,
-        "observer": observer
-    }
-}
+  return { interval, observer };
+};
